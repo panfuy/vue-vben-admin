@@ -6,7 +6,23 @@ import {
   setupI18n,
 } from './i18n';
 
-const $t = i18n.global.t;
+// const $t = i18n.global.t;
+/**
+ * 翻译函数（若是传入了空的key会返回空字符串）
+ *
+ * @param key 翻译key
+ * @param option  翻译选项
+ * @returns 翻译结果
+ */
+function $t(key: null | string | undefined, option?: unknown) {
+  if (key === null || key === undefined || key === '') {
+    return '';
+  }
+  return i18n.global.t(key, option as any);
+}
+/**
+ * 检查翻译key是否存在
+ */
 const $te = i18n.global.te;
 
 export {

@@ -25,6 +25,10 @@
       "path": "apps/web-tdesign"
     },
     {
+      "name": "@jalos/web-upms",
+      "path": "apps/web-upms"
+    },
+    {
       "name": "@vben/docs",
       "path": "docs"
     },
