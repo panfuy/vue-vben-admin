@@ -1,16 +1,22 @@
 import { $t } from '#/locales';
 
 export enum StatusEnum {
-  DISABLE = 'DISABLE',
+  DISABLED = 'DISABLED',
   ENABLED = 'ENABLED',
 }
 
-export const StatusMap = {
-  [StatusEnum.ENABLED]: $t('common.enabled'),
-  [StatusEnum.DISABLE]: $t('common.disabled'),
-};
+export function getStatus(status: StatusEnum) {
+  return (
+    StatusOptions().find((option) => option.value === status) || {
+      label: status,
+      value: status,
+    }
+  );
+}
 
-export const StatusOptions = [
-  { label: $t('common.enabled'), value: StatusEnum.ENABLED },
-  { label: $t('common.disabled'), value: StatusEnum.DISABLE },
-];
+export function StatusOptions() {
+  return [
+    { label: $t('common.enabled'), value: StatusEnum.ENABLED },
+    { label: $t('common.disabled'), value: StatusEnum.DISABLED },
+  ];
+}

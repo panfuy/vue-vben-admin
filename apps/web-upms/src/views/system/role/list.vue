@@ -11,15 +11,30 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRoleList, updateRole } from '#/api';
-import { StatusEnum, StatusMap } from '#/api/common/enums/status';
+import {
+  deleteRole,
+  getRefIdsById,
+  getRoleListPage,
+  updateRole,
+} from '#/api';
+import { getStatus, StatusEnum } from '#/api/common/enums/status';
 import { $t } from '#/locales';
 
-import { useColumns, useGridFormSchema } from './data';
+import { onStatusShow, useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+import SettingsMenu from './modules/settings-menu.vue';
+import SettingsPermissions from './modules/settings-permissions.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
+  destroyOnClose: false,
+});
+const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
+  connectedComponent: SettingsMenu,
+  destroyOnClose: false,
+});
+const [PermissionsDrawer, permissionsDrawerApi] = useVbenDrawer({
+  connectedComponent: SettingsPermissions,
   destroyOnClose: false,
 });
 
@@ -36,7 +51,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues: any) => {
-          return await getRoleList({
+          return await getRoleListPage({
             currPage: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -65,7 +80,21 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
       break;
     }
     case 'edit': {
-      onEdit(e.row);
+      formDrawerApi.setData(e.row).open();
+      break;
+    }
+    case 'menu': {
+      // 查询此角色拥有的菜单ID
+      getRefIdsById('MENU', e.row.id).then((menuIds) => {
+        menuDrawerApi.setData({ ...e.row, menuIds }).open();
+      });
+      break;
+    }
+    case 'permissions': {
+      // 查询此角色拥有的权限ID
+      getRefIdsById('PERMISSION', e.row.id).then((permissionIds) => {
+        permissionsDrawerApi.setData({ ...e.row, permissionIds }).open();
+      });
       break;
     }
   }
@@ -92,17 +121,6 @@ function confirm(content: string, title: string) {
 }
 
 /**
- * 状态列显示控制（是否显示状态开关）
- * @param row 数据行
- */
-function onStatusShow(row: RoleService.RoleVO) {
-  if (row.source && row.source !== '') {
-    return false; // 不可以修改
-  }
-  return true; // 可修改
-}
-
-/**
  * 状态开关即将改变
  * @param newStatus 期望改变的状态值
  * @param row 行数据
@@ -110,25 +128,21 @@ function onStatusShow(row: RoleService.RoleVO) {
  */
 async function onStatusChange(newStatus: StatusEnum, row: RoleService.RoleVO) {
   // 只有source字段为空字符串的角色才可以操作状态
-  if (row.source && row.source !== '') {
+  if (!onStatusShow(row)) {
     message.warning('该角色状态不可修改');
     return false;
   }
 
   try {
     await confirm(
-      `你要将${row.name}的状态切换为 【${StatusMap[newStatus]}】 吗？`,
+      `你要将${row.name}的状态切换为 【${getStatus(newStatus)?.label}】 吗？`,
       `切换状态`,
     );
-    await updateRole(row.id, { status: newStatus });
+    await updateRole({ id: row.id, status: newStatus });
     return true;
   } catch {
     return false;
   }
-}
-
-function onEdit(row: RoleService.RoleVO) {
-  formDrawerApi.setData(row).open();
 }
 
 function onDelete(row: RoleService.RoleVO) {
@@ -155,12 +169,17 @@ function onRefresh() {
 }
 
 function onCreate() {
-  formDrawerApi.setData({}).open();
+  // 获取表格分页数据中total字段
+  const proxyInfo = gridApi.grid?.getProxyInfo();
+  const totalRows = proxyInfo?.pager?.total ?? 0;
+  formDrawerApi.setData({ sort: totalRows + 1 }).open();
 }
 </script>
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
+    <MenuDrawer @success="onRefresh" />
+    <PermissionsDrawer @success="onRefresh" />
     <Grid :table-title="$t('system.role.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

@@ -100,7 +100,7 @@ setupVbenVxeTable({
         {
           color: 'error',
           label: $t('common.disabled'),
-          value: StatusEnum.DISABLE,
+          value: StatusEnum.DISABLED,
         },
       ];
       const tagItem = tagOptions.find((item) => item.value === value);
@@ -134,7 +134,7 @@ setupVbenVxeTable({
           checkedChildren: $t('common.enabled'),
           checkedValue: StatusEnum.ENABLED,
           unCheckedChildren: $t('common.disabled'),
-          unCheckedValue: StatusEnum.DISABLE,
+          unCheckedValue: StatusEnum.DISABLED,
           ...props,
           checked: row[column.field],
           loading: row[loadingKey] ?? false,

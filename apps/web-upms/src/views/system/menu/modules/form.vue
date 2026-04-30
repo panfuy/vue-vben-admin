@@ -15,9 +15,10 @@ import { getPopupContainer } from '@vben/utils';
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
 import { useVbenForm, z } from '#/adapter/form';
+import { StatusEnum, StatusOptions } from '#/api/common/enums/status';
 import {
   createMenu,
-  getMenuList,
+  getTreeList,
   isMenuNameExists,
   isMenuPathExists,
   MenuService,
@@ -73,13 +74,13 @@ const schema: VbenFormSchema[] = [
   {
     component: 'ApiTreeSelect',
     componentProps: {
-      api: getMenuList,
+      api: getTreeList,
       class: 'w-full',
       filterTreeNode(input: string, node: Recordable<any>) {
         if (!input || input.length === 0) {
           return true;
         }
-        const title: string = node.meta?.title ?? '';
+        const title: string = node.title ?? '';
         if (!title) return false;
         return title.includes(input) || $t(title).includes(input);
       },
@@ -274,13 +275,10 @@ const schema: VbenFormSchema[] = [
     component: 'RadioGroup',
     componentProps: {
       buttonStyle: 'solid',
-      options: [
-        { label: $t('common.enabled'), value: 1 },
-        { label: $t('common.disabled'), value: 0 },
-      ],
       optionType: 'button',
+      options: StatusOptions(),
     },
-    defaultValue: 1,
+    defaultValue: StatusEnum.ENABLED,
     fieldName: 'status',
     label: $t('system.menu.status'),
   },

@@ -39,7 +39,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: StatusOptions,
+        options: StatusOptions(),
       },
       fieldName: 'status',
       label: $t('system.menu.status'),
@@ -130,7 +130,7 @@ export function useColumns(
         options: [
           {
             code: 'append',
-            text: '新增下级',
+            text: $t('system.menu.createSub'),
           },
           'edit', // 默认的编辑按钮
           'delete', // 默认的删除按钮

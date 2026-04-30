@@ -47,12 +47,15 @@
       "normal": "Text",
       "none": "None"
     },
-    "badgeVariants": "Badge Style"
+    "sort":"Sort",
+    "badgeVariants": "Badge Style",
+    "createSub": "Create Sub"
   },
   "role": {
     "title": "Role Management",
     "list": "Role List",
     "name": "Role",
+    "code": "Role Code",
     "roleName": "Role Name",
     "id": "Role ID",
     "status": "Status",
@@ -60,6 +63,9 @@
     "createTime": "Creation Time",
     "operation": "Operation",
     "permissions": "Permissions",
-    "setPermissions": "Permissions"
+    "menu": "Menu",
+    "sort":"Sort",
+    "setMenu": "Setting Menu",
+    "setPermissions": "Setting Permissions"
   }
 }

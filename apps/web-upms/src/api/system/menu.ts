@@ -107,6 +107,10 @@ async function getMenuList(params: Recordable<MenuService.MenuQueryVO>) {
   );
 }
 
+async function getTreeList() {
+  return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree');
+}
+
 async function isMenuNameExists(name: string, id?: MenuService.MenuVO['id']) {
   return requestClient.get<boolean>('/menu/checkExists', {
     params: { id, name },
@@ -137,7 +141,7 @@ async function updateMenu(
   id: string,
   data: Omit<MenuService.MenuVO, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/menu/${id}`, data);
+  return requestClient.put(`/menu/update/${id}`, data);
 }
 
 /**
@@ -145,13 +149,14 @@ async function updateMenu(
  * @param id 菜单 ID
  */
 async function deleteMenu(id: string) {
-  return requestClient.delete(`/system/menu/${id}`);
+  return requestClient.delete(`/menu/delete/${id}`);
 }
 
 export {
   createMenu,
   deleteMenu,
   getMenuList,
+  getTreeList,
   isMenuNameExists,
   isMenuPathExists,
   updateMenu,
