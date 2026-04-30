@@ -17,7 +17,7 @@ import { getTreeList } from '#/api/system/menu';
 import { createRole, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
 
-import { useMenuSchema} from '../data';
+import { useMenuSchema } from '../data';
 
 const emits = defineEmits(['success']);
 
@@ -90,7 +90,6 @@ function getNodeClass(node: Recordable<any>) {
 
   return classes.join(' ');
 }
-
 </script>
 <template>
   <Drawer :title="$t('system.role.setMenu')">
@@ -99,7 +98,7 @@ function getNodeClass(node: Recordable<any>) {
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
           <Tree
             class="permissions-tree"
-            :style="{ '--select-all-text': `'${ $t('common.selectAll') }'`}"
+            :style="{ '--select-all-text': `'${$t('common.selectAll')}'` }"
             :tree-data="permissions"
             multiple
             bordered
@@ -138,5 +137,4 @@ function getNodeClass(node: Recordable<any>) {
   color: inherit;
   content: var(--select-all-text, 'Select All');
 }
-
 </style>

@@ -9,7 +9,7 @@ import { useVbenForm } from '#/adapter/form';
 import { createRole, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
 
-import { useFormSchema} from '../data';
+import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
 
@@ -43,7 +43,6 @@ const getDrawerTitle = computed(() => {
     ? $t('common.edit', $t('system.role.name'))
     : $t('common.create', $t('system.role.name'));
 });
-
 </script>
 <template>
   <Drawer :title="getDrawerTitle">

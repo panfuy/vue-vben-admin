@@ -11,12 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  deleteRole,
-  getRefIdsById,
-  getRoleListPage,
-  updateRole,
-} from '#/api';
+import { deleteRole, getRefIdsById, getRoleListPage, updateRole } from '#/api';
 import { getStatus, StatusEnum } from '#/api/common/enums/status';
 import { $t } from '#/locales';
 

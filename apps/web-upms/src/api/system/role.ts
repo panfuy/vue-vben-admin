@@ -41,7 +41,11 @@ async function getRefIdsById(type: string, roleId: string) {
  * @param roleId 角色 ID
  * @param refIds 引用ID列表
  */
-async function saveRef(type: string, roleId: string, refIds: Recordable<string>) {
+async function saveRef(
+  type: string,
+  roleId: string,
+  refIds: Recordable<string>,
+) {
   return requestClient.put(`/role/saveRef/${type}/${roleId}`, refIds);
 }
 

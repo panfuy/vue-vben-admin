@@ -16,7 +16,7 @@ import { useVbenForm } from '#/adapter/form';
 import { createRole, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
 
-import { useFormSchema} from '../data';
+import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
 
