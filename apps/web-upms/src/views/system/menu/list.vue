@@ -1,7 +1,10 @@
 <script lang="ts" setup>
+import type { VbenFormSchema } from '#/adapter/form';
 import type {
+  OnActionClickFn,
   OnActionClickParams,
-  VxeTableGridOptions,
+  VxeTableGridColumns,
+  VxeTableGridOptions
 } from '#/adapter/vxe-table';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
@@ -13,15 +16,140 @@ import { MenuBadge } from '@vben-core/menu-ui';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { StatusOptions } from '#/api/common/enums/status';
 import { deleteMenu, getMenuList, MenuService } from '#/api/system/menu';
 
-import { useColumns, useGridFormSchema } from './data';
+import { getMenuTypeOptions } from './common';
 import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
-  destroyOnClose: true,
+  destroyOnClose: true, // 关闭时销毁
+  closeOnPressEscape: true, // Esc按钮为关闭事件
 });
+
+function useGridFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: $t('system.menu.field.name'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'title',
+      label: $t('system.menu.field.title'),
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        allowClear: true,
+        options: StatusOptions(),
+      },
+      fieldName: 'status',
+      label: $t('system.menu.field.status'),
+    },
+    {
+      component: 'RangePicker',
+      fieldName: 'createTime',
+      label: $t('system.menu.field.createTime'),
+    },
+  ];
+}
+
+function useColumns(
+  onActionClick: OnActionClickFn<MenuService.MenuVO>,
+): VxeTableGridColumns<MenuService.MenuVO> {
+  return [
+    {
+      align: 'left',
+      field: 'title',
+      fixed: 'left',
+      slots: { default: 'title' },
+      title: $t('system.menu.field.title'),
+      treeNode: true,
+      width: 250,
+    },
+    {
+      align: 'left',
+      fixed: 'left',
+      field: 'name',
+      title: $t('system.menu.field.name'),
+      width: 150,
+    },
+    {
+      align: 'center',
+      cellRender: { name: 'CellTag', options: getMenuTypeOptions() },
+      field: 'type',
+      title: $t('system.menu.field.type'),
+      width: 100,
+    },
+    {
+      field: 'authCode',
+      title: $t('system.menu.field.authCode'),
+      width: 200,
+    },
+    {
+      align: 'left',
+      field: 'path',
+      title: $t('system.menu.field.path'),
+      width: 200,
+    },
+
+    {
+      align: 'left',
+      field: 'component',
+      formatter: ({ row }) => {
+        switch (row.type) {
+          case 'CATALOG':
+          case 'MENU': {
+            return row.component ?? '';
+          }
+          case 'EMBEDDED': {
+            return row.meta?.iframeSrc ?? '';
+          }
+          case 'LINK': {
+            return row.meta?.link ?? '';
+          }
+        }
+        return '';
+      },
+      minWidth: 200,
+      title: $t('system.menu.field.component'),
+    },
+    {
+      cellRender: { name: 'CellTag' },
+      field: 'status',
+      title: $t('system.menu.field.status'),
+      width: 100,
+    },
+
+    {
+      align: 'right',
+      cellRender: {
+        attrs: {
+          nameField: 'name',
+          onClick: onActionClick,
+        },
+        name: 'CellOperation',
+        options: [
+          {
+            code: 'append',
+            text: $t('system.common.columns.createSub'),
+          },
+          'edit', // 默认的编辑按钮
+          'delete', // 默认的删除按钮
+        ],
+      },
+      field: 'operation',
+      fixed: 'right',
+      headerAlign: 'center',
+      showOverflow: false,
+      title: $t('system.common.columns.operation'),
+      width: 200,
+    },
+  ];
+}
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {

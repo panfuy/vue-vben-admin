@@ -216,6 +216,12 @@ setupVbenVxeTable({
             {
               ...props,
               ...opt,
+              class: [opt.class, 'outline-hidden'],
+              style: {
+                ...opt.style,
+                outline: 'none',
+                boxShadow: 'none',
+              },
               icon: undefined,
               onClick: listen
                 ? () =>

@@ -107,7 +107,7 @@ async function getMenuList(params: Recordable<MenuService.MenuQueryVO>) {
   );
 }
 
-async function getTreeList() {
+async function getMenuTreeList() {
   return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree');
 }
 
@@ -156,7 +156,7 @@ export {
   createMenu,
   deleteMenu,
   getMenuList,
-  getTreeList,
+  getMenuTreeList,
   isMenuNameExists,
   isMenuPathExists,
   updateMenu,

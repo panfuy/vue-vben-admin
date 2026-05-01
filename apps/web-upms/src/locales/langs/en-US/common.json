@@ -1,3 +1,12 @@
 {
-  "selectAll": "Select All"
+  "selectAll": "Select All",
+  "formRules": {
+    "notMatch": "{0} does not meet the requirements ({1})",
+    "onlyLetterNumber":"Only letters, numbers, underscores, and hyphens are allowed"
+  },
+  "gender":{
+    "male": "Male",
+    "female": "Female",
+    "unknown": "Unknown"
+  }
 }

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import type { RoleService } from '#/api/system/role';
+import type { VbenFormSchema } from '#/adapter/form';
+import type { TenantService } from '#/api/system/tenant';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -7,35 +8,40 @@ import { useVbenDrawer } from '@vben/common-ui';
 
 import { useVbenForm, z } from '#/adapter/form';
 import { StatusEnum, StatusOptions } from '#/api/common/enums/status';
-import { createRole, isRoleCodeExists, updateRole } from '#/api/system/role';
+import {
+  createTenant,
+  isTenantIdExists,
+  isTenantNameExists,
+  updateTenant,
+} from '#/api/system/tenant';
 import { $t } from '#/locales';
 
 import { onStatusShow } from '../common';
 
 const emits = defineEmits(['success']);
 
-const formData = ref<RoleService.RoleVO>();
+const formData = ref<TenantService.TenantVO>();
 
-const [Form, formApi] = useVbenForm({
-  schema: [
+function useFormSchema(): VbenFormSchema[] {
+  return [
     {
       component: 'Input',
-      fieldName: 'code',
-      label: $t('system.role.field.code'),
+      fieldName: 'id',
+      label: $t('system.tenant.field.id'),
       dependencies: {
         disabled() {
           return !!id.value || false;
         },
-        triggerFields: ['code'],
+        triggerFields: ['id'],
       },
       rules: z
         .string()
-        .min(2, $t('ui.formRules.minLength', [$t('system.role.field.code'), 2]))
-        .max(30, $t('ui.formRules.maxLength', [$t('system.role.field.code'), 30]))
+        .min(2, $t('ui.formRules.minLength', [$t('system.tenant.field.id'), 2]))
+        .max(32, $t('ui.formRules.maxLength', [$t('system.tenant.field.id'), 32]))
         .regex(
           /^[\w-]+$/,
           $t('common.formRules.notMatch', [
-            $t('system.role.field.code'),
+            $t('system.tenant.field.id'),
             $t('common.formRules.onlyLetterNumber'),
           ]),
         )
@@ -44,11 +50,11 @@ const [Form, formApi] = useVbenForm({
             if (!value || value.length === 0 || !!id.value) {
               return true;
             }
-            return !(await isRoleCodeExists(value));
+            return !(await isTenantIdExists(value));
           },
           (value) => ({
             message: $t('ui.formRules.alreadyExists', [
-              $t('system.role.field.code'),
+              $t('system.tenant.field.id'),
               value,
             ]),
           }),
@@ -57,8 +63,42 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('system.role.field.name'),
-      rules: 'required',
+      label: $t('system.tenant.field.name'),
+      rules: z
+        .string()
+        .min(2, $t('ui.formRules.minLength', [$t('system.tenant.field.name'), 2]))
+        .max(100, $t('ui.formRules.maxLength', [$t('system.tenant.field.name'), 100]))
+        .regex(
+          /^[\w-]+$/,
+          $t('common.formRules.notMatch', [
+            $t('system.tenant.field.name'),
+            $t('common.formRules.onlyLetterNumber'),
+          ]),
+        )
+        .refine(
+          async (value: string) => {
+            if (!value || value.length === 0) {
+              return true;
+            }
+            return !(await isTenantNameExists(value));
+          },
+          (value) => ({
+            message: $t('ui.formRules.alreadyExists', [
+              $t('system.tenant.field.name'),
+              value,
+            ]),
+          }),
+        ),
+    },
+    {
+      component: 'Input',
+      fieldName: 'shortName',
+      label: $t('system.tenant.field.shortName'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'nickName',
+      label: $t('system.tenant.field.nickName'),
     },
     {
       component: 'RadioGroup',
@@ -69,30 +109,27 @@ const [Form, formApi] = useVbenForm({
       },
       defaultValue: StatusEnum.ENABLED,
       fieldName: 'status',
-      label: $t('system.role.field.status'),
+      label: $t('system.tenant.field.status'),
       dependencies: {
         disabled() {
-          return !onStatusShow(formData.value as RoleService.RoleVO);
+          return !onStatusShow(formData.value as TenantService.TenantVO);
         },
-        triggerFields: ['status','code'],
+        triggerFields: ['status', 'source'],
       },
-    },
-    {
-      component: 'InputNumber',
-      fieldName: 'sort',
-      label: $t('system.role.field.sort'),
-      rules: 'required',
-      defaultValue: 0,
     },
     {
       component: 'Textarea',
       componentProps: {
         rows: 4, // 设置行数，影响高度
       },
-      fieldName: 'description',
-      label: $t('system.role.field.remark'),
+      fieldName: 'remark',
+      label: $t('system.tenant.field.remark'),
     },
-  ],
+  ];
+}
+
+const [Form, formApi] = useVbenForm({
+  schema: useFormSchema(),
   showDefaultActions: false,
 });
 
@@ -103,7 +140,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? updateRole({ id: id.value, ...values }) : createRole(values))
+    (id.value ? updateTenant(values) : createTenant(values))
       .then(() => {
         emits('success');
         drawerApi.close();
@@ -114,7 +151,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<RoleService.RoleVO>();
+      const data = drawerApi.getData<TenantService.TenantVO>();
       formApi.resetForm();
 
       if (data) {
@@ -134,8 +171,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
 const getDrawerTitle = computed(() => {
   return formData.value?.id
-    ? $t('common.edit', $t('system.role.name'))
-    : $t('common.create', $t('system.role.name'));
+    ? $t('common.edit', $t('system.tenant.name'))
+    : $t('common.create', $t('system.tenant.name'));
 });
 </script>
 <template>

@@ -3,7 +3,7 @@ import type { DataNode } from 'ant-design-vue/es/tree';
 
 import type { Recordable } from '@vben/types';
 
-import type { RoleService } from '#/api/system/role';
+import type { TenantService } from '#/api/system/tenant';
 
 import { nextTick, ref } from 'vue';
 
@@ -14,30 +14,35 @@ import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getMenuTreeList } from '#/api/system/menu';
-import { createRole, updateRole } from '#/api/system/role';
+import { saveTenantRef } from '#/api/system/tenant';
 import { $t } from '#/locales';
-
 
 const emits = defineEmits(['success']);
 
-const formData = ref<RoleService.RoleVO>();
+const formData = ref<TenantService.TenantVO>();
 
 const [Form, formApi] = useVbenForm({
-  schema: [],
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'menuIds',
+      formItemClass: 'items-start',
+      hideLabel: true,
+      modelPropName: 'modelValue',
+    },
+  ],
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
-const loadingPermissions = ref(false);
+const menuTreeData = ref<DataNode[]>([]);
+const menuLoadingShow = ref(false);
 
 const id = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
-    const { valid } = await formApi.validate();
-    if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? updateRole(values) : createRole(values))
+    saveTenantRef('MENU', id.value, values.menuIds)
       .then(() => {
         emits('success');
         drawerApi.close();
@@ -49,7 +54,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<RoleService.RoleVO>();
+      const data = drawerApi.getData<TenantService.TenantVO>();
       formApi.resetForm();
 
       if (data) {
@@ -59,8 +64,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
         id.value = undefined;
       }
 
-      if (permissions.value.length === 0) {
-        await loadPermissions();
+      if (menuTreeData.value.length === 0) {
+        await loadData();
       }
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
@@ -71,13 +76,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-async function loadPermissions() {
-  loadingPermissions.value = true;
+async function loadData() {
+  menuLoadingShow.value = true;
   try {
     const res = await getMenuTreeList();
-    permissions.value = res as unknown as DataNode[];
+    menuTreeData.value = res as unknown as DataNode[];
   } finally {
-    loadingPermissions.value = false;
+    menuLoadingShow.value = false;
   }
 }
 
@@ -93,16 +98,17 @@ function getNodeClass(node: Recordable<any>) {
 <template>
   <Drawer :title="$t('system.common.setMenu')">
     <Form>
-      <template #permissions="slotProps">
-        <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
+      <template #menuIds="slotProps">
+        <Spin :spinning="menuLoadingShow" wrapper-class-name="w-full">
           <Tree
-            class="permissions-tree"
+            class="menus-tree"
             :style="{ '--select-all-text': `'${$t('common.selectAll')}'` }"
-            :tree-data="permissions"
+            :tree-data="menuTreeData"
             multiple
             bordered
             :default-expanded-level="2"
             :get-node-class="getNodeClass"
+            :transition="false"
             v-bind="slotProps"
             value-field="id"
             label-field="title"
@@ -119,19 +125,7 @@ function getNodeClass(node: Recordable<any>) {
   </Drawer>
 </template>
 <style lang="css" scoped>
-:deep(.ant-tree-title) {
-  .tree-actions {
-    @apply ml-5 hidden;
-  }
-}
-
-:deep(.ant-tree-title:hover) {
-  .tree-actions {
-    @apply ml-5 flex flex-auto justify-end;
-  }
-}
-
-:deep(.permissions-tree .size-5)::after {
+:deep(.menus-tree .size-5)::after {
   margin-left: 0.5rem;
   color: inherit;
   content: var(--select-all-text, 'Select All');

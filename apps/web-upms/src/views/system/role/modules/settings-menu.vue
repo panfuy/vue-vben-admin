@@ -13,18 +13,24 @@ import { IconifyIcon } from '@vben/icons';
 import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getTreeList } from '#/api/system/menu';
-import { saveRef } from '#/api/system/role';
+import { getMenuTreeList } from '#/api/system/menu';
+import { saveRoleRef } from '#/api/system/role';
 import { $t } from '#/locales';
-
-import { useMenuSchema } from '../data';
 
 const emits = defineEmits(['success']);
 
 const formData = ref<RoleService.RoleVO>();
 
 const [Form, formApi] = useVbenForm({
-  schema: useMenuSchema(),
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'menuIds',
+      formItemClass: 'items-start',
+      hideLabel: true,
+      modelPropName: 'modelValue',
+    },
+  ],
   showDefaultActions: false,
 });
 
@@ -36,7 +42,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
-    saveRef('MENU', id.value, values.menuIds)
+    saveRoleRef('MENU', id.value, values.menuIds)
       .then(() => {
         emits('success');
         drawerApi.close();
@@ -73,7 +79,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 async function loadData() {
   menuLoadingShow.value = true;
   try {
-    const res = await getTreeList();
+    const res = await getMenuTreeList();
     menuTreeData.value = res as unknown as DataNode[];
   } finally {
     menuLoadingShow.value = false;
@@ -90,7 +96,7 @@ function getNodeClass(node: Recordable<any>) {
 }
 </script>
 <template>
-  <Drawer :title="$t('system.role.setMenu')">
+  <Drawer :title="$t('system.common.setMenu')">
     <Form>
       <template #menuIds="slotProps">
         <Spin :spinning="menuLoadingShow" wrapper-class-name="w-full">
@@ -100,6 +106,7 @@ function getNodeClass(node: Recordable<any>) {
             :tree-data="menuTreeData"
             multiple
             bordered
+            :transition="false"
             :default-expanded-level="2"
             :get-node-class="getNodeClass"
             v-bind="slotProps"

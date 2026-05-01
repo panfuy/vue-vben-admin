@@ -29,7 +29,7 @@ export namespace RoleService {
  * @param roleId 角色 ID
  * @returns 引用ID列表
  */
-async function getRefIdsById(type: string, roleId: string) {
+async function getRoleRefIdsById(type: string, roleId: string) {
   return requestClient.get<Array<string>>(
     `/role/getRefIdsById/${type}/${roleId}`,
   );
@@ -41,12 +41,23 @@ async function getRefIdsById(type: string, roleId: string) {
  * @param roleId 角色 ID
  * @param refIds 引用ID列表
  */
-async function saveRef(
+async function saveRoleRef(
   type: string,
   roleId: string,
   refIds: Recordable<string>,
 ) {
   return requestClient.put(`/role/saveRef/${type}/${roleId}`, refIds);
+}
+
+/**
+ * 检查角色编码是否存在
+ * @param code 角色编码
+ * @returns 是否存在
+ */
+async function isRoleCodeExists(code: string) {
+  return requestClient.get<boolean>('/role/checkExists', {
+    params: { code },
+  });
 }
 
 /**
@@ -87,8 +98,9 @@ async function deleteRole(id: string) {
 export {
   createRole,
   deleteRole,
-  getRefIdsById,
   getRoleListPage,
-  saveRef,
+  getRoleRefIdsById,
+  isRoleCodeExists,
+  saveRoleRef,
   updateRole,
 };

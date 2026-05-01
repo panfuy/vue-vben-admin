@@ -16,14 +16,12 @@ import { useVbenForm } from '#/adapter/form';
 import { createRole, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
 
-import { useFormSchema } from '../data';
-
 const emits = defineEmits(['success']);
 
 const formData = ref<RoleService.RoleVO>();
 
 const [Form, formApi] = useVbenForm({
-  schema: useFormSchema(),
+  schema: [],
   showDefaultActions: false,
 });
 

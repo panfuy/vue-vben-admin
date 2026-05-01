@@ -18,7 +18,7 @@ import { useVbenForm, z } from '#/adapter/form';
 import { StatusEnum, StatusOptions } from '#/api/common/enums/status';
 import {
   createMenu,
-  getTreeList,
+  getMenuTreeList,
   isMenuNameExists,
   isMenuPathExists,
   MenuService,
@@ -27,7 +27,7 @@ import {
 import { $t } from '#/locales';
 import { componentKeys, componentPaths } from '#/router/routes';
 
-import { getMenuTypeOptions } from '../data';
+import { getMenuTypeOptions } from '../common';
 
 const emit = defineEmits<{
   success: [];
@@ -46,16 +46,16 @@ const schema: VbenFormSchema[] = [
     defaultValue: 'MENU',
     fieldName: 'type',
     formItemClass: 'col-span-2 md:col-span-2',
-    label: $t('system.menu.type'),
+    label: $t('system.menu.field.type'),
   },
   {
     component: 'Input',
     fieldName: 'name',
-    label: $t('system.menu.menuName'),
+    label: $t('system.menu.field.name'),
     rules: z
       .string()
-      .min(2, $t('ui.formRules.minLength', [$t('system.menu.menuName'), 2]))
-      .max(30, $t('ui.formRules.maxLength', [$t('system.menu.menuName'), 30]))
+      .min(2, $t('ui.formRules.minLength', [$t('system.menu.field.name'), 2]))
+      .max(30, $t('ui.formRules.maxLength', [$t('system.menu.field.name'), 30]))
       .refine(
         async (value: string) => {
           if (!value || value.length === 0) {
@@ -65,7 +65,7 @@ const schema: VbenFormSchema[] = [
         },
         (value) => ({
           message: $t('ui.formRules.alreadyExists', [
-            $t('system.menu.menuName'),
+            $t('system.menu.field.name'),
             value,
           ]),
         }),
@@ -74,7 +74,7 @@ const schema: VbenFormSchema[] = [
   {
     component: 'ApiTreeSelect',
     componentProps: {
-      api: getTreeList,
+      api: getMenuTreeList,
       class: 'w-full',
       filterTreeNode(input: string, node: Recordable<any>) {
         if (!input || input.length === 0) {
@@ -92,7 +92,7 @@ const schema: VbenFormSchema[] = [
       childrenField: 'children',
     },
     fieldName: 'parentId',
-    label: $t('system.menu.parent'),
+    label: $t('system.menu.field.parent'),
     renderComponentContent() {
       return {
         title({ label, meta }: { label: string; meta: Recordable<any> }) {
@@ -119,7 +119,7 @@ const schema: VbenFormSchema[] = [
       };
     },
     fieldName: 'title',
-    label: $t('system.menu.menuTitle'),
+    label: $t('system.menu.field.title'),
     rules: 'required',
   },
 
@@ -140,16 +140,16 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'path',
-    label: $t('system.menu.path'),
+    label: $t('system.menu.field.path'),
     rules: z
       .string()
-      .min(2, $t('ui.formRules.minLength', [$t('system.menu.path'), 2]))
-      .max(100, $t('ui.formRules.maxLength', [$t('system.menu.path'), 100]))
+      .min(2, $t('ui.formRules.minLength', [$t('system.menu.field.path'), 2]))
+      .max(100, $t('ui.formRules.maxLength', [$t('system.menu.field.path'), 100]))
       .refine(
         (value: string) => {
           return value.startsWith('/');
         },
-        $t('ui.formRules.startWith', [$t('system.menu.path'), '/']),
+        $t('ui.formRules.startWith', [$t('system.menu.field.path'), '/']),
       )
       .refine(
         async (value: string) => {
@@ -160,7 +160,7 @@ const schema: VbenFormSchema[] = [
         },
         (value) => ({
           message: $t('ui.formRules.alreadyExists', [
-            $t('system.menu.path'),
+            $t('system.menu.field.path'),
             value,
           ]),
         }),
@@ -175,12 +175,12 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'activePath',
-    help: $t('system.menu.activePathHelp'),
+    help: $t('system.menu.message.activePathHelp'),
     label: $t('system.menu.activePath'),
     rules: z
       .string()
-      .min(2, $t('ui.formRules.minLength', [$t('system.menu.path'), 2]))
-      .max(100, $t('ui.formRules.maxLength', [$t('system.menu.path'), 100]))
+      .min(2, $t('ui.formRules.minLength', [$t('system.menu.field.path'), 2]))
+      .max(100, $t('ui.formRules.maxLength', [$t('system.menu.field.path'), 100]))
       .refine(
         (value: string) => {
           return value.startsWith('/');
@@ -192,7 +192,7 @@ const schema: VbenFormSchema[] = [
           return true;
         }
         return await isMenuPathExists(value, formData.value?.id);
-      }, $t('system.menu.activePathMustExist'))
+      }, $t('system.menu.message.activePathMustExist'))
       .optional(),
   },
   {
@@ -207,7 +207,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'meta.icon',
-    label: $t('system.menu.icon'),
+    label: $t('system.menu.field.icon'),
   },
   {
     component: 'IconPicker',
@@ -221,7 +221,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'meta.activeIcon',
-    label: $t('system.menu.activeIcon'),
+    label: $t('system.menu.field.activeIcon'),
   },
   {
     component: 'AutoComplete',
@@ -243,7 +243,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'component',
-    label: $t('system.menu.component'),
+    label: $t('system.menu.field.component'),
   },
   {
     component: 'Input',
@@ -254,7 +254,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'linkSrc',
-    label: $t('system.menu.linkSrc'),
+    label: $t('system.menu.field.linkSrc'),
     rules: z.string().url($t('ui.formRules.invalidURL')),
   },
   {
@@ -269,7 +269,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'authCode',
-    label: $t('system.menu.authCode'),
+    label: $t('system.menu.field.authCode'),
   },
   {
     component: 'RadioGroup',
@@ -280,7 +280,7 @@ const schema: VbenFormSchema[] = [
     },
     defaultValue: StatusEnum.ENABLED,
     fieldName: 'status',
-    label: $t('system.menu.status'),
+    label: $t('system.menu.field.status'),
   },
 
   {
@@ -296,7 +296,7 @@ const schema: VbenFormSchema[] = [
     hideLabel: true,
     renderComponentContent() {
       return {
-        default: () => $t('徽标设置'),
+        default: () => $t('system.menu.field.badge'),
       };
     },
   },
@@ -306,8 +306,8 @@ const schema: VbenFormSchema[] = [
       allowClear: true,
       class: 'w-full',
       options: [
-        { label: $t('system.menu.badgeType.dot'), value: 'dot' },
-        { label: $t('system.menu.badgeType.normal'), value: 'normal' },
+        { label: $t('system.menu.field.badgeType.dot'), value: 'dot' },
+        { label: $t('system.menu.field.badgeType.normal'), value: 'normal' },
       ],
     },
     dependencies: {
@@ -317,7 +317,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'meta.badgeType',
-    label: $t('system.menu.badgeType.title'),
+    label: $t('system.menu.field.badgeType.title'),
   },
   {
     component: 'Input',
@@ -335,7 +335,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'meta.badge',
-    label: $t('system.menu.badge'),
+    label: $t('system.menu.field.badge'),
   },
   {
     component: 'Select',
@@ -354,7 +354,7 @@ const schema: VbenFormSchema[] = [
       triggerFields: ['type'],
     },
     fieldName: 'meta.badgeVariants',
-    label: $t('system.menu.badgeVariants'),
+    label: $t('system.menu.field.badgeVariants'),
   },
   {
     component: 'Divider',
@@ -384,7 +384,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.keepAlive',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.keepAlive'),
+        default: () => $t('system.menu.field.keepAlive'),
       };
     },
   },
@@ -399,7 +399,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.affixTab',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.affixTab'),
+        default: () => $t('system.menu.field.affixTab'),
       };
     },
   },
@@ -414,7 +414,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.hideInMenu',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.hideInMenu'),
+        default: () => $t('system.menu.field.hideInMenu'),
       };
     },
   },
@@ -429,7 +429,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.hideChildrenInMenu',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.hideChildrenInMenu'),
+        default: () => $t('system.menu.field.hideChildrenInMenu'),
       };
     },
   },
@@ -444,7 +444,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.hideInBreadcrumb',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.hideInBreadcrumb'),
+        default: () => $t('system.menu.field.hideInBreadcrumb'),
       };
     },
   },
@@ -459,7 +459,7 @@ const schema: VbenFormSchema[] = [
     fieldName: 'meta.hideInTab',
     renderComponentContent() {
       return {
-        default: () => $t('system.menu.hideInTab'),
+        default: () => $t('system.menu.field.hideInTab'),
       };
     },
   },

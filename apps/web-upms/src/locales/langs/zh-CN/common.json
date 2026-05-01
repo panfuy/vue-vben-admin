@@ -1,3 +1,14 @@
 {
-  "selectAll": "全选"
+  "selectAll": "全选",
+  "formRules": {
+    "notMatch": "{0} 不符合要求（{1}）",
+    "onlyLetterNumber":"只允许 字母、数字、下划线、短横线",
+    "email":"请输入正确的邮箱格式",
+    "phone":"请输入正确的电话号码格式"
+  },
+  "gender":{
+    "male": "男",
+    "female": "女",
+    "unknown": "未知"
+  }
 }

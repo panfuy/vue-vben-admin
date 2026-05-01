@@ -1,9 +1,11 @@
 <script lang="ts" setup>
+import type { VbenFormSchema } from '#/adapter/form';
 import type {
   OnActionClickParams,
-  VxeTableGridOptions,
+  VxeTableGridColumns,
+  VxeTableGridOptions
 } from '#/adapter/vxe-table';
-import type { RoleService } from '#/api';
+import type { RoleService } from '#/api/system/role';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,11 +13,16 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRefIdsById, getRoleListPage, updateRole } from '#/api';
-import { getStatus, StatusEnum } from '#/api/common/enums/status';
+import { getStatus, StatusEnum, StatusOptions } from '#/api/common/enums/status';
+import {
+  deleteRole,
+  getRoleListPage,
+  getRoleRefIdsById,
+  updateRole,
+} from '#/api/system/role';
 import { $t } from '#/locales';
 
-import { onStatusShow, useColumns, useGridFormSchema } from './data';
+import { onStatusShow } from './common';
 import Form from './modules/form.vue';
 import SettingsMenu from './modules/settings-menu.vue';
 import SettingsPermissions from './modules/settings-permissions.vue';
@@ -23,49 +30,17 @@ import SettingsPermissions from './modules/settings-permissions.vue';
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: false,
+  closeOnPressEscape: true,
 });
 const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsMenu,
   destroyOnClose: false,
+  closeOnPressEscape: true,
 });
 const [PermissionsDrawer, permissionsDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsPermissions,
   destroyOnClose: false,
-});
-
-const [Grid, gridApi] = useVbenVxeGrid({
-  formOptions: {
-    fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
-    schema: useGridFormSchema(),
-    submitOnChange: true,
-  },
-  gridOptions: {
-    columns: useColumns(onActionClick, onStatusChange, onStatusShow),
-    height: 'auto',
-    keepSource: true,
-    proxyConfig: {
-      ajax: {
-        query: async ({ page }, formValues: any) => {
-          return await getRoleListPage({
-            currPage: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
-          });
-        },
-      },
-    },
-    rowConfig: {
-      keyField: 'id',
-    },
-
-    toolbarConfig: {
-      custom: true,
-      export: false,
-      refresh: true,
-      search: true,
-      zoom: true,
-    },
-  } as VxeTableGridOptions<RoleService.RoleVO>,
+  closeOnPressEscape: true,
 });
 
 function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
@@ -80,14 +55,14 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
     }
     case 'menu': {
       // 查询此角色拥有的菜单ID
-      getRefIdsById('MENU', e.row.id).then((menuIds) => {
+      getRoleRefIdsById('MENU', e.row.id).then((menuIds) => {
         menuDrawerApi.setData({ ...e.row, menuIds }).open();
       });
       break;
     }
     case 'permissions': {
       // 查询此角色拥有的权限ID
-      getRefIdsById('PERMISSION', e.row.id).then((permissionIds) => {
+      getRoleRefIdsById('PERMISSION', e.row.id).then((permissionIds) => {
         permissionsDrawerApi.setData({ ...e.row, permissionIds }).open();
       });
       break;
@@ -169,6 +144,136 @@ function onCreate() {
   const totalRows = proxyInfo?.pager?.total ?? 0;
   formDrawerApi.setData({ sort: totalRows + 1 }).open();
 }
+
+function useGridFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('system.role.field.code'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: $t('system.role.field.name'),
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        allowClear: true,
+        options: StatusOptions(),
+      },
+      fieldName: 'status',
+      label: $t('system.role.field.status'),
+    },
+    {
+      component: 'RangePicker',
+      fieldName: 'createTime',
+      label: $t('system.role.field.createTime'),
+    },
+  ];
+}
+
+function useColumns(): VxeTableGridColumns {
+  return [
+    {
+      field: 'code',
+      title: $t('system.role.field.code'),
+      width: 200,
+    },
+    {
+      field: 'name',
+      title: $t('system.role.field.name'),
+      width: 200,
+    },
+    {
+      field: 'description',
+      minWidth: 100,
+      title: $t('system.role.field.remark'),
+    },
+    {
+      cellRender: {
+        attrs: { beforeChange: onStatusChange, isShow: onStatusShow },
+        name: 'CellSwitch',
+      },
+      field: 'status',
+      title: $t('system.role.field.status'),
+      width: 100,
+    },
+    {
+      field: 'sort',
+      title: $t('system.role.field.sort'),
+      width: 100,
+    },
+    {
+      field: 'createTime',
+      title: $t('system.role.field.createTime'),
+      width: 200,
+    },
+    {
+      align: 'center',
+      cellRender: {
+        attrs: {
+          nameField: 'name',
+          nameTitle: $t('system.role.field.name'),
+          onClick: onActionClick,
+        },
+        name: 'CellOperation',
+        options: [
+          {
+            code: 'permissions',
+            text: $t('system.common.columns.permissions'),
+          },
+          {
+            code: 'menu',
+            text: $t('system.common.columns.menu'),
+          },
+          'edit', // 默认的编辑按钮
+          'delete', // 默认的删除按钮
+        ],
+      },
+      field: 'operation',
+      fixed: 'right',
+      title: $t('system.common.columns.operation'),
+      width: 200,
+    },
+  ];
+}
+
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
+    schema: useGridFormSchema(),
+    submitOnChange: false, // 要点击查询按钮才会触发查询，修改表单项不会自动查询
+  },
+  gridOptions: {
+    columns: useColumns(),
+    height: 'auto',
+    keepSource: true,
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues: any) => {
+          return await getRoleListPage({
+            currPage: page.currentPage,
+            pageSize: page.pageSize,
+            ...formValues,
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+    },
+
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: true,
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<RoleService.RoleVO>,
+});
 </script>
 <template>
   <Page auto-content-height>
