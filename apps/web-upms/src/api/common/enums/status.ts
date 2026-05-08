@@ -16,7 +16,15 @@ export function getStatus(status: StatusEnum) {
 
 export function StatusOptions() {
   return [
-    { label: $t('common.enabled'), value: StatusEnum.ENABLED },
-    { label: $t('common.disabled'), value: StatusEnum.DISABLED },
+    {
+      label: $t('common.enabled'),
+      value: StatusEnum.ENABLED,
+      color: 'success',
+    },
+    {
+      label: $t('common.disabled'),
+      value: StatusEnum.DISABLED,
+      color: 'error',
+    },
   ];
 }

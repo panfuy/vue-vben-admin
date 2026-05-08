@@ -13,6 +13,15 @@ const routes: RouteRecordRaw[] = [
     path: '/system',
     children: [
       {
+        path: '/system/permission',
+        name: 'SystemPermission',
+        meta: {
+          icon: 'fa:user-circle',
+          title: $t('system.permission.title'),
+        },
+        component: () => import('#/views/system/permission/list.vue'),
+      },
+      {
         path: '/system/role',
         name: 'SystemRole',
         meta: {

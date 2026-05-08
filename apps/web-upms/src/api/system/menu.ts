@@ -137,11 +137,8 @@ async function createMenu(data: Omit<MenuService.MenuVO, 'children' | 'id'>) {
  * @param id 菜单 ID
  * @param data 菜单数据
  */
-async function updateMenu(
-  id: string,
-  data: Omit<MenuService.MenuVO, 'children' | 'id'>,
-) {
-  return requestClient.put(`/menu/update/${id}`, data);
+async function updateMenu(data: Omit<MenuService.MenuVO, 'children'>) {
+  return requestClient.put(`/menu/update`, data);
 }
 
 /**

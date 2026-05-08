@@ -515,7 +515,7 @@ async function onSubmit() {
     delete data.linkSrc;
     try {
       await (formData.value?.id
-        ? updateMenu(formData.value.id, data)
+        ? updateMenu({id: formData.value.id, ...data})
         : createMenu(data));
       drawerApi.close();
       emit('success');

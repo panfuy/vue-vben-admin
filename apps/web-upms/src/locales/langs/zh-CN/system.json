@@ -111,5 +111,23 @@
       "remark": "备注",
       "createTime": "创建时间"
     }
+  },
+  "permission": {
+    "title": "权限管理",
+    "list": "权限列表",
+    "name": "权限",
+    "field": {
+      "parent": "上级权限",
+      "type": "类型",
+      "code": "编码",
+      "description": "描述",
+      "remark": "备注",
+      "createTime": "创建时间"
+    },
+    "type": {
+      "resource": "资源",
+      "operation": "操作",
+      "unknown": "未知"
+    }
   }
 }

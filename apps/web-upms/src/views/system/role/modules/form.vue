@@ -33,7 +33,7 @@ const [Form, formApi] = useVbenForm({
         .min(2, $t('ui.formRules.minLength', [$t('system.role.field.code'), 2]))
         .max(30, $t('ui.formRules.maxLength', [$t('system.role.field.code'), 30]))
         .regex(
-          /^[\w-]+$/,
+          /^[\w.-]+$/,
           $t('common.formRules.notMatch', [
             $t('system.role.field.code'),
             $t('common.formRules.onlyLetterNumber'),

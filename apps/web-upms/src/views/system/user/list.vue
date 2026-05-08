@@ -81,6 +81,8 @@ function useColumns(): VxeTableGridColumns {
     },
     {
       field: 'gender',
+      cellRender: { name: 'CellTag', options: GenderOptions() },
+      // formatter: ({ cellValue }) => getGender(cellValue).label,
       title: $t('system.user.field.gender'),
       width: 100,
     },

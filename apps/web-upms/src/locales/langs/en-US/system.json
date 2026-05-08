@@ -109,5 +109,23 @@
       "remark": "Remark",
       "createTime": "Creation Time"
     }
+  },
+  "permission": {
+    "title": "Permission Management",
+    "list": "Permission List",
+    "name": "Permission",
+    "field": {
+      "parent": "Parent Permission",
+      "type": "Type",
+      "code": "Code",
+      "description": "Description",
+      "remark": "Remark",
+      "createTime": "Creation Time"
+    },
+    "type": {
+      "resource": "Resource",
+      "operation": "Operation",
+      "unknown": "Unknown"
+    }
   }
 }
