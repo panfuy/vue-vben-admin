@@ -1,20 +1,17 @@
 <script lang="ts" setup>
 import type { DataNode } from 'ant-design-vue/es/tree';
 
-import type { Recordable } from '@vben/types';
-
 import type { RoleService } from '#/api/system/role';
 
 import { nextTick, ref } from 'vue';
 
 import { Tree, useVbenDrawer } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
 
 import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuTreeList } from '#/api/system/menu';
-import { createRole, updateRole } from '#/api/system/role';
+import { getPermissionTreeList } from '#/api/system/permission';
+import { saveRoleRef } from '#/api/system/role';
 import { $t } from '#/locales';
 
 
@@ -23,21 +20,27 @@ const emits = defineEmits(['success']);
 const formData = ref<RoleService.RoleVO>();
 
 const [Form, formApi] = useVbenForm({
-  schema: [],
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'permissionIds',
+      formItemClass: 'items-start',
+      hideLabel: true,
+      modelPropName: 'modelValue',
+    },
+  ],
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
+const permissionTreeData = ref<DataNode[]>([]);
 const loadingPermissions = ref(false);
 
 const id = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
-    const { valid } = await formApi.validate();
-    if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? updateRole(values) : createRole(values))
+    saveRoleRef('PERMISSION', id.value, values.permissionIds)
       .then(() => {
         emits('success');
         drawerApi.close();
@@ -59,8 +62,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
         id.value = undefined;
       }
 
-      if (permissions.value.length === 0) {
-        await loadPermissions();
+      if (permissionTreeData.value.length === 0) {
+        await loadData();
       }
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
@@ -71,46 +74,36 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-async function loadPermissions() {
+async function loadData() {
   loadingPermissions.value = true;
   try {
-    const res = await getMenuTreeList();
-    permissions.value = res as unknown as DataNode[];
+    const res = await getPermissionTreeList();
+    permissionTreeData.value = res as unknown as DataNode[];
   } finally {
     loadingPermissions.value = false;
   }
 }
 
-function getNodeClass(node: Recordable<any>) {
-  const classes: string[] = [];
-  if (node.value?.type === 'button') {
-    classes.push('inline-flex');
-  }
-
-  return classes.join(' ');
-}
 </script>
 <template>
-  <Drawer :title="$t('system.common.setMenu')">
+  <Drawer :title="$t('system.common.setPermission')">
     <Form>
-      <template #permissions="slotProps">
+      <template #permissionIds="slotProps">
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
           <Tree
             class="permissions-tree"
             :style="{ '--select-all-text': `'${$t('common.selectAll')}'` }"
-            :tree-data="permissions"
+            :tree-data="permissionTreeData"
             multiple
             bordered
-            :default-expanded-level="2"
-            :get-node-class="getNodeClass"
             v-bind="slotProps"
             value-field="id"
-            label-field="title"
-            icon-field="meta.icon"
+            label-field="code"
           >
             <template #node="{ value }">
-              <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
-              {{ $t(value.title) }}
+              <span class="permission-tree-node-text">
+                {{ value.description ? `${value.description} (${value.code})` : value.code }}
+              </span>
             </template>
           </Tree>
         </Spin>
@@ -136,4 +129,13 @@ function getNodeClass(node: Recordable<any>) {
   color: inherit;
   content: var(--select-all-text, 'Select All');
 }
+
+:deep(.permissions-tree .permission-tree-node-text) {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 </style>

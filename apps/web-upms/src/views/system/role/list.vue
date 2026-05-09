@@ -43,6 +43,8 @@ const [PermissionsDrawer, permissionsDrawerApi] = useVbenDrawer({
   closeOnPressEscape: true,
 });
 
+  // class: 'w-150',
+
 function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
   switch (e.code) {
     case 'delete': {
