@@ -1,8 +1,6 @@
 {
   "title": "System Management",
   "common": {
-    "setMenu": "Setting Menu",
-    "setPermission": "Setting Permission",
     "columns": {
       "operation": "Operation",
       "menu": "Menu",
@@ -66,6 +64,9 @@
     "message": {
       "activePathHelp": "When jumping to the current route, \nthe menu path that needs to be activated must be specified when it does not display in the navigation menu.",
       "activePathMustExist": "The path could not find a valid menu"
+    },
+    "settings": {
+      "setMenu": "Configure Menu"
     }
   },
   "role": {
@@ -124,6 +125,9 @@
       "description": "Description",
       "remark": "Remark",
       "createTime": "Creation Time"
+    },
+    "settings": {
+      "setPermission": "Configure permission"
     }
   }
 }

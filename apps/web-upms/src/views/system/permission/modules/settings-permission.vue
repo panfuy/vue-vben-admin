@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import type { DataNode } from 'ant-design-vue/es/tree';
 
-import type { RoleService } from '#/api/system/role';
-
 import { nextTick, ref } from 'vue';
 
 import { Tree, useVbenDrawer } from '@vben/common-ui';
@@ -11,13 +9,11 @@ import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getPermissionTreeList } from '#/api/system/permission';
-import { saveRoleRef } from '#/api/system/role';
 import { $t } from '#/locales';
-
 
 const emits = defineEmits(['success']);
 
-const formData = ref<RoleService.RoleVO>();
+const formData = ref<any>();
 
 const [Form, formApi] = useVbenForm({
   schema: [
@@ -40,19 +36,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
-    saveRoleRef('PERMISSION', id.value, values.permissionIds)
-      .then(() => {
-        emits('success');
-        drawerApi.close();
-      })
-      .catch(() => {
-        drawerApi.unlock();
-      });
+    emits('success', id.value,  values);
+    drawerApi.close();
   },
 
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<RoleService.RoleVO>();
+      const data = drawerApi.getData<any>();
       formApi.resetForm();
 
       if (data) {
@@ -86,7 +76,7 @@ async function loadData() {
 
 </script>
 <template>
-  <Drawer :title="$t('system.common.setPermission')">
+  <Drawer :title="$t('system.permission.settings.setPermission')">
     <Form>
       <template #permissionIds="slotProps">
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">

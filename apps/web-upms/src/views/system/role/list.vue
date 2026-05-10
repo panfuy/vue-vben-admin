@@ -3,7 +3,7 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type {
   OnActionClickParams,
   VxeTableGridColumns,
-  VxeTableGridOptions
+  VxeTableGridOptions,
 } from '#/adapter/vxe-table';
 import type { RoleService } from '#/api/system/role';
 
@@ -13,19 +13,24 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getStatus, StatusEnum, StatusOptions } from '#/api/common/enums/status';
+import {
+  getStatus,
+  StatusEnum,
+  StatusOptions,
+} from '#/api/common/enums/status';
 import {
   deleteRole,
   getRoleListPage,
   getRoleRefIdsById,
+  saveRoleRef,
   updateRole,
 } from '#/api/system/role';
 import { $t } from '#/locales';
+import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
+import SettingsPermissions from '#/views/system/permission/modules/settings-permission.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
-import SettingsMenu from './modules/settings-menu.vue';
-import SettingsPermissions from './modules/settings-permissions.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -43,7 +48,7 @@ const [PermissionsDrawer, permissionsDrawerApi] = useVbenDrawer({
   closeOnPressEscape: true,
 });
 
-  // class: 'w-150',
+// class: 'w-150',
 
 function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
   switch (e.code) {
@@ -77,6 +82,24 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
       break;
     }
   }
+}
+
+/**
+ * 保存菜单引用
+ * @param roleId 角色ID
+ * @param refIds 菜单ID数组
+ */
+function onSaveRefMenu(roleId: any, refIds: any) {
+  saveRoleRef('MENU', roleId, refIds.menuIds);
+}
+
+/**
+ * 保存权限引用
+ * @param roleId  角色ID
+ * @param refIds  权限ID数组
+ */
+function onSaveRefPermission(roleId: any, refIds: any) {
+  saveRoleRef('PERMISSION', roleId, refIds.permissionIds);
 }
 
 /**
@@ -291,8 +314,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
-    <MenuDrawer @success="onRefresh" />
-    <PermissionsDrawer @success="onRefresh" />
+    <MenuDrawer @success="onSaveRefMenu" />
+    <PermissionsDrawer @success="onSaveRefPermission" />
     <Grid :table-title="$t('system.role.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

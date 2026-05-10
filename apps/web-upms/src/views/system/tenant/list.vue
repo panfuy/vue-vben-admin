@@ -13,13 +13,23 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getStatus, StatusEnum,StatusOptions } from '#/api/common/enums/status';
-import { deleteTenant, getTenantListPage, getTenantRefIdsById, updateTenant } from '#/api/system/tenant';
+import {
+  getStatus,
+  StatusEnum,
+  StatusOptions,
+} from '#/api/common/enums/status';
+import {
+  deleteTenant,
+  getTenantListPage,
+  getTenantRefIdsById,
+  saveTenantRef,
+  updateTenant,
+} from '#/api/system/tenant';
 import { $t } from '#/locales';
+import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
-import SettingsMenu from './modules/settings-menu.vue';
 import SettingsUser from './modules/settings-user.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -206,6 +216,15 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
 }
 
 /**
+ * 保存菜单引用
+ * @param tenantId 租户ID
+ * @param refIds 菜单ID数组
+ */
+function onSaveRefMenu(tenantId: any, refIds: any) {
+  saveTenantRef('MENU', tenantId, refIds.menuIds);
+}
+
+/**
  * 将Antd的Modal.confirm封装为promise，方便在异步函数中调用。
  * @param content 提示内容
  * @param title 提示标题
@@ -231,7 +250,10 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(newStatus: StatusEnum, row: TenantService.TenantVO) {
+async function onStatusChange(
+  newStatus: StatusEnum,
+  row: TenantService.TenantVO,
+) {
   // 只有source字段为空字符串的租户才可以操作状态
   if (!onStatusShow(row)) {
     message.warning('该租户状态不可修改');
@@ -280,7 +302,7 @@ function onCreate() {
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
-    <MenuDrawer @success="onRefresh" />
+    <MenuDrawer @success="onSaveRefMenu" />
     <UserModal @success="onRefresh" />
     <Grid :table-title="$t('system.tenant.list')">
       <template #toolbar-tools>

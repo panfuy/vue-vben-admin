@@ -3,8 +3,6 @@ import type { DataNode } from 'ant-design-vue/es/tree';
 
 import type { Recordable } from '@vben/types';
 
-import type { TenantService } from '#/api/system/tenant';
-
 import { nextTick, ref } from 'vue';
 
 import { Tree, useVbenDrawer } from '@vben/common-ui';
@@ -14,12 +12,11 @@ import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getMenuTreeList } from '#/api/system/menu';
-import { saveTenantRef } from '#/api/system/tenant';
 import { $t } from '#/locales';
 
 const emits = defineEmits(['success']);
 
-const formData = ref<TenantService.TenantVO>();
+const formData = ref<any>();
 
 const [Form, formApi] = useVbenForm({
   schema: [
@@ -42,19 +39,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
-    saveTenantRef('MENU', id.value, values.menuIds)
-      .then(() => {
-        emits('success');
-        drawerApi.close();
-      })
-      .catch(() => {
-        drawerApi.unlock();
-      });
+    emits('success', id.value,  values);
+    drawerApi.close();
   },
 
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<TenantService.TenantVO>();
+      const data = drawerApi.getData<any>();
       formApi.resetForm();
 
       if (data) {
@@ -96,7 +87,7 @@ function getNodeClass(node: Recordable<any>) {
 }
 </script>
 <template>
-  <Drawer :title="$t('system.common.setMenu')">
+  <Drawer :title="$t('system.menu.settings.setMenu')">
     <Form>
       <template #menuIds="slotProps">
         <Spin :spinning="menuLoadingShow" wrapper-class-name="w-full">
@@ -106,9 +97,9 @@ function getNodeClass(node: Recordable<any>) {
             :tree-data="menuTreeData"
             multiple
             bordered
+            :transition="false"
             :default-expanded-level="2"
             :get-node-class="getNodeClass"
-            :transition="false"
             v-bind="slotProps"
             value-field="id"
             label-field="title"
@@ -125,6 +116,18 @@ function getNodeClass(node: Recordable<any>) {
   </Drawer>
 </template>
 <style lang="css" scoped>
+:deep(.ant-tree-title) {
+  .tree-actions {
+    @apply ml-5 hidden;
+  }
+}
+
+:deep(.ant-tree-title:hover) {
+  .tree-actions {
+    @apply ml-5 flex flex-auto justify-end;
+  }
+}
+
 :deep(.menus-tree .size-5)::after {
   margin-left: 0.5rem;
   color: inherit;
