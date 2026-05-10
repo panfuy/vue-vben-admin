@@ -6,7 +6,7 @@ import type { ClassType, Recordable } from '@vben-core/typings';
 
 import type { TreeProps } from './types';
 
-import { onMounted, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 
 import { ChevronRight, IconifyIcon } from '@vben-core/icons';
 import { cn, get } from '@vben-core/shared/utils';
@@ -190,6 +190,32 @@ function isNodeDisabled(item: FlattenedItem<Recordable<any>>) {
   return props.disabled || get(item.value, props.disabledField);
 }
 
+// 计算全选/半选状态
+const selectAllStatus = computed<'indeterminate' | boolean>(() => {
+  if (!props.multiple) return false;
+  if (!modelValue.value || !Array.isArray(modelValue.value)) return false;
+
+  const allValues = flattenData.value
+    .filter((item) => !get(item.value, props.disabledField))
+    .map((item) => get(item.value, props.valueField));
+
+  const selectedCount = allValues.filter((v) =>
+    (modelValue.value as (number | string)[]).includes(v),
+  ).length;
+
+  if (selectedCount === 0) return false;
+  if (selectedCount === allValues.length) return true;
+  return 'indeterminate';
+});
+
+function onSelectAllChange(checked: 'indeterminate' | boolean) {
+  if (checked === true) {
+    checkAll();
+  } else {
+    unCheckAll();
+  }
+}
+
 function onToggle(item: FlattenedItem<Recordable<any>>) {
   emits('expand', item);
 }
@@ -316,11 +342,10 @@ defineExpose({
         />
         <Checkbox
           v-if="multiple"
+          :model-value="selectAllStatus"
+          :indeterminate="selectAllStatus === 'indeterminate'"
           @click.stop
-          @update:model-value="
-            (checked: boolean | 'indeterminate') =>
-              checked === true ? checkAll() : unCheckAll()
-          "
+          @update:model-value="onSelectAllChange"
         />
       </div>
     </div>
