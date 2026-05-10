@@ -69,6 +69,13 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
       });
       break;
     }
+    case 'user': {
+      // 查询此角色拥有的菜单ID
+      getRoleRefIdsById('USER', e.row.id).then((userIds) => {
+        // TODO: 打开用户列表页面
+      });
+      break;
+    }
   }
 }
 
@@ -223,6 +230,10 @@ function useColumns(): VxeTableGridColumns {
         name: 'CellOperation',
         options: [
           {
+            code: 'user',
+            text: $t('system.common.columns.user'),
+          },
+          {
             code: 'permissions',
             text: $t('system.common.columns.permissions'),
           },
@@ -237,7 +248,7 @@ function useColumns(): VxeTableGridColumns {
       field: 'operation',
       fixed: 'right',
       title: $t('system.common.columns.operation'),
-      width: 200,
+      width: 280,
     },
   ];
 }

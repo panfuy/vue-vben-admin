@@ -16,32 +16,12 @@ import {
 } from '#/api/system/permission';
 import { $t } from '#/locales';
 
-import { getPermissionTypeOptions, TypeEnum } from '../common';
-
 const emit = defineEmits<{
   success: [];
 }>();
 
 const formData = ref<PermissionService.PermissionVO>();
 const schema: VbenFormSchema[] = [
-  {
-    component: 'RadioGroup',
-    componentProps: {
-      buttonStyle: 'solid',
-      options: getPermissionTypeOptions(),
-      optionType: 'button',
-    },
-    defaultValue: TypeEnum.UNKNOWN,
-    rules: 'selectRequired',
-    fieldName: 'type',
-    label: $t('system.permission.field.type'),
-    dependencies: {
-      disabled() {
-        return !!formData.value?.id;
-      },
-      triggerFields: ['type'],
-    },
-  },
   {
     component: 'ApiSelect',
     componentProps: {
@@ -58,12 +38,12 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show(values: Partial<PermissionService.PermissionVO>) {
-        return values.type === TypeEnum.OPERATION;
+        return !formData.value?.id || !!values.parentId;
       },
       disabled() {
         return !!formData.value?.id;
       },
-      triggerFields: ['type'],
+      triggerFields: ['parentId'],
     },
     rules: 'selectRequired',
     fieldName: 'parentId',
@@ -89,7 +69,7 @@ const schema: VbenFormSchema[] = [
           if (!value || value.length === 0) {
             return true;
           }
-          return !(await isPermissionCodeExists(value, formData.value?.type, formData.value?.id));
+          return !(await isPermissionCodeExists(value, formData.value?.id));
         },
         (value) => ({
           message: $t('ui.formRules.alreadyExists', [

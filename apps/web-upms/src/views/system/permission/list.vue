@@ -15,9 +15,9 @@ import { $t } from '@vben/locales';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { SourceOptions } from '#/api/common/enums/source';
 import { deletePermission, getPermissionList } from '#/api/system/permission';
 
-import { getPermissionTypeOptions } from './common';
 import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -34,13 +34,9 @@ function useGridFormSchema(): VbenFormSchema[] {
       label: $t('system.permission.field.code'),
     },
     {
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: getPermissionTypeOptions(),
-      },
-      fieldName: 'type',
-      label: $t('system.permission.field.type'),
+      component: 'Input',
+      fieldName: 'description',
+      label: $t('system.permission.field.description'),
     },
     {
       component: 'RangePicker',
@@ -69,9 +65,9 @@ function useColumns(
     },
     {
       align: 'center',
-      cellRender: { name: 'CellTag', options: getPermissionTypeOptions() },
-      field: 'type',
-      title: $t('system.permission.field.type'),
+      cellRender: { name: 'CellTag', options: SourceOptions() },
+      field: 'source',
+      title: $t('system.permission.field.source'),
       width: 100,
     },
     {

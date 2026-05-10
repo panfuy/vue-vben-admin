@@ -7,7 +7,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { TenantService } from '#/api/system/tenant';
 
-import { Page, useVbenDrawer } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -20,6 +20,7 @@ import { $t } from '#/locales';
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
 import SettingsMenu from './modules/settings-menu.vue';
+import SettingsUser from './modules/settings-user.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -31,6 +32,11 @@ const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
   closeOnPressEscape: true,
 });
 
+const [UserModal, userModalApi] = useVbenModal({
+  connectedComponent: SettingsUser,
+  destroyOnClose: true,
+  closeOnPressEscape: true,
+});
 
 function useGridFormSchema(): VbenFormSchema[] {
   return [
@@ -118,8 +124,8 @@ function useColumns(): VxeTableGridColumns {
         name: 'CellOperation',
         options: [
           {
-            code: 'admin',
-            text: $t('system.common.columns.admin'),
+            code: 'user',
+            text: $t('system.common.columns.user'),
           },
           {
             code: 'menu',
@@ -174,11 +180,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
   switch (e.code) {
-    case 'admin': {
-      // 跳转到角色管理页面
-      // TODO: 跳转到角色管理页面
-      break;
-    }
     case 'delete': {
       onDelete(e.row);
       break;
@@ -191,6 +192,13 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
       // 查询此角色拥有的菜单ID
       getTenantRefIdsById('MENU', e.row.id).then((menuIds) => {
         menuDrawerApi.setData({ ...e.row, menuIds }).open();
+      });
+      break;
+    }
+    case 'user': {
+      // 查询此角色拥有的管理员ID
+      getTenantRefIdsById('USER', e.row.id).then((userIds) => {
+        userModalApi.setData({ ...e.row, userIds }).open();
       });
       break;
     }
@@ -273,6 +281,7 @@ function onCreate() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <MenuDrawer @success="onRefresh" />
+    <UserModal @success="onRefresh" />
     <Grid :table-title="$t('system.tenant.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

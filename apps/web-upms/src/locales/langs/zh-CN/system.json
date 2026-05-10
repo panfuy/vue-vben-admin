@@ -8,7 +8,8 @@
       "menu": "菜单",
       "permissions": "权限",
       "createSub": "新增下级",
-      "admin": "管理员"
+      "user": "用户",
+      "role": "角色"
     }
   },
   "dept": {
@@ -83,14 +84,14 @@
     }
   },
   "tenant": {
-    "title": "租户管理",
-    "list": "租户列表",
-    "name": "租户",
+    "title": "应用管理",
+    "list": "应用列表",
+    "name": "应用",
     "field": {
-      "id": "租户ID",
-      "name": "租户名称",
-      "shortName": "租户简称",
-      "nickName": "租户别称",
+      "id": "应用ID",
+      "name": "应用名称",
+      "shortName": "应用简称",
+      "nickName": "应用别称",
       "status": "状态",
       "remark": "备注",
       "createTime": "创建时间"
@@ -118,16 +119,11 @@
     "name": "权限",
     "field": {
       "parent": "上级权限",
-      "type": "类型",
+      "source": "来源",
       "code": "编码",
       "description": "描述",
       "remark": "备注",
       "createTime": "创建时间"
-    },
-    "type": {
-      "resource": "资源",
-      "operation": "操作",
-      "unknown": "未知"
     }
   }
 }

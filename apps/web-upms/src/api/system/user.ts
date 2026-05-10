@@ -49,6 +49,17 @@ async function getUserListPage(params: Recordable<UserService.UserQueryVO>) {
     params,
   );
 }
+/**
+ * 根据ID查询用户集合
+ * @param ids 集合
+ * @returns 用户列表
+ */
+async function getUserListByIds(ids: string[]) {
+  return requestClient.post<Array<UserService.UserVO>>(
+    '/user/queryListByIds',
+    ids,
+  );
+}
 
 /**
  * 创建用户
@@ -75,4 +86,11 @@ async function deleteUser(id: string) {
   return requestClient.delete(`/user/delete/${id}`);
 }
 
-export { createUser, deleteUser, getUserListPage, isUserExists, updateUser };
+export {
+  createUser,
+  deleteUser,
+  getUserListByIds,
+  getUserListPage,
+  isUserExists,
+  updateUser,
+};

@@ -8,7 +8,8 @@
       "menu": "Menu",
       "permissions": "Permissions",
       "createSub": "Create Sub",
-      "admin": "Admin"
+      "user": "User",
+      "role": "Role"
     }
   },
   "dept": {
@@ -82,15 +83,15 @@
     }
   },
   "tenant": {
-    "title": "Tenant Management",
-    "list": "Tenant List",
-    "name": "Tenant",
+    "title": "App Management",
+    "list": "App List",
+    "name": "App",
     "setMenu": "Setting Menu",
     "field": {
-      "id": "Tenant ID",
-      "name": "Tenant Name",
-      "shortName": "Tenant Shortname",
-      "nickName": "Tenant Nickname",
+      "id": "AppID",
+      "name": "App Name",
+      "shortName": "App Shortname",
+      "nickName": "App Nickname",
       "status": "Status",
       "remark": "Remark",
       "createTime": "Creation Time"
@@ -118,16 +119,11 @@
     "name": "Permission",
     "field": {
       "parent": "Parent Permission",
-      "type": "Type",
+      "source": "Source",
       "code": "Code",
       "description": "Description",
       "remark": "Remark",
       "createTime": "Creation Time"
-    },
-    "type": {
-      "resource": "Resource",
-      "operation": "Operation",
-      "unknown": "Unknown"
     }
   }
 }

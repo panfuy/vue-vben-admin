@@ -8,5 +8,7 @@
     "male": "Male",
     "female": "Female",
     "unknown": "Unknown"
-  }
+  },
+  "internal": "Internal",
+  "unknown": "Unknown"
 }

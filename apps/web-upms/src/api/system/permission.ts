@@ -7,8 +7,8 @@ import { requestClient } from '#/api/request';
 export namespace PermissionService {
   export interface PermissionQueryVO extends Common.BasePageVO {
     code: string;
-    /** 权限类型 */
-    type: string;
+    /** 权限描述 */
+    description: string;
   }
 export interface PermissionVO {
     [key: string]: any;
@@ -22,8 +22,8 @@ export interface PermissionVO {
     description: string;
     /** 父级ID */
     parentId: string;
-    /** 权限类型 */
-    type: string;
+    /** 数据来源 */
+    source: string;
   }
 }
 
@@ -59,9 +59,9 @@ async function getPermissionAllRootList() {
  * @param id
  * @returns
  */
-async function isPermissionCodeExists(code: string, type?: string, id?: PermissionService.PermissionVO['id']) {
+async function isPermissionCodeExists(code: string, id?: PermissionService.PermissionVO['id']) {
   return requestClient.get<boolean>('/permission/checkExists', {
-    params: { id, code, type },
+    params: { id, code },
   });
 }
 

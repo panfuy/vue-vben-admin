@@ -13,6 +13,15 @@ const routes: RouteRecordRaw[] = [
     path: '/system',
     children: [
       {
+        path: '/system/user',
+        name: 'SystemUser',
+        meta: {
+          icon: 'fa:user-circle',
+          title: $t('system.user.title'),
+        },
+        component: () => import('#/views/system/user/list.vue'),
+      },
+      {
         path: '/system/permission',
         name: 'SystemPermission',
         meta: {
@@ -40,15 +49,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/system/menu/list.vue'),
       },
       {
-        path: '/system/dept',
-        name: 'SystemDept',
-        meta: {
-          icon: 'charm:organisation',
-          title: $t('system.dept.title'),
-        },
-        component: () => import('#/views/system/dept/list.vue'),
-      },
-      {
         path: '/system/tenant',
         name: 'SystemTenant',
         meta: {
@@ -58,13 +58,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/system/tenant/list.vue'),
       },
       {
-        path: '/system/user',
-        name: 'SystemUser',
+        path: '/system/dept',
+        name: 'SystemDept',
         meta: {
-          icon: 'fa:user-circle',
-          title: $t('system.user.title'),
+          icon: 'charm:organisation',
+          title: $t('system.dept.title'),
         },
-        component: () => import('#/views/system/user/list.vue'),
+        component: () => import('#/views/system/dept/list.vue'),
       },
     ],
   },

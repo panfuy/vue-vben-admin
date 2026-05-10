@@ -128,6 +128,10 @@ function useColumns(): VxeTableGridColumns {
         },
         name: 'CellOperation',
         options: [
+          {
+            code: 'role',
+            text: $t('system.common.columns.role'),
+          },
           'edit', // 默认的编辑按钮
           'delete', // 默认的删除按钮
         ],
@@ -183,6 +187,10 @@ function onActionClick(e: OnActionClickParams<UserService.UserVO>) {
     }
     case 'edit': {
       formDrawerApi.setData(e.row).open();
+      break;
+    }
+    case 'role': {
+      // TODO: 角色分配
       break;
     }
   }

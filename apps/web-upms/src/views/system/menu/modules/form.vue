@@ -176,7 +176,7 @@ const schema: VbenFormSchema[] = [
     },
     fieldName: 'activePath',
     help: $t('system.menu.message.activePathHelp'),
-    label: $t('system.menu.activePath'),
+    label: $t('system.menu.field.activePath'),
     rules: z
       .string()
       .min(2, $t('ui.formRules.minLength', [$t('system.menu.field.path'), 2]))
