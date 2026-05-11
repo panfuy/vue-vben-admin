@@ -81,6 +81,12 @@
       "status": "Status",
       "remark": "Remark",
       "createTime": "Creation Time"
+    },
+    "settings": {
+      "setRole": "Configure Role",
+      "beSelected": "To be selected roles",
+      "selected": "Selected Roles",
+      "searchTips": "Search Role"
     }
   },
   "tenant": {
@@ -112,6 +118,12 @@
       "status": "Status",
       "remark": "Remark",
       "createTime": "Creation Time"
+    },
+    "settings": {
+      "setUser": "Configure User",
+      "beSelected": "To be selected User",
+      "selected": "Selected User",
+      "searchTips": "Search User"
     }
   },
   "permission": {

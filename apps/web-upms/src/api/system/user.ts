@@ -1,14 +1,15 @@
 import type { Recordable } from '@vben/types';
 
-import type { Common } from '#/api/common/vo/base-query';
+import type { VO } from '#/api/common/vo/base';
 
 import { StatusEnum } from '#/api/common/enums/status';
 import { requestClient } from '#/api/request';
 
 export namespace UserService {
-  export interface UserQueryVO extends Common.BasePageVO {
-    id: string;
-    name: string;
+  export interface UserQueryVO extends VO.PageVO {
+    [key: string]: any;
+    condition: string | undefined;
+    name?: string;
   }
 
   export interface UserVO {
@@ -43,8 +44,8 @@ async function isUserExists(id: string) {
  * @param params 查询参数
  * @returns 用户列表
  */
-async function getUserListPage(params: Recordable<UserService.UserQueryVO>) {
-  return requestClient.post<Array<UserService.UserVO>>(
+async function getUserListPage(params: Recordable<UserService.UserQueryVO>): Promise<VO.PageVO<UserService.UserVO>> {
+  return requestClient.post<VO.PageVO<UserService.UserVO>>(
     '/user/queryByPage',
     params,
   );
@@ -59,6 +60,32 @@ async function getUserListByIds(ids: string[]) {
     '/user/queryListByIds',
     ids,
   );
+}
+
+/**
+ * 根据ID 获取引用 ID 列表
+ * @param type 引用类型（如：菜单、权限等）
+ * @param roleId 角色 ID
+ * @returns 引用ID列表
+ */
+async function getUserRefIdsById(type: string, userId: string) {
+  return requestClient.get<Array<string>>(
+    `/user/getRefIdsById/${type}/${userId}`,
+  );
+}
+
+/**
+ * 根据 ID 保存引用 ID 列表
+ * @param type 引用类型（如：菜单、权限等）
+ * @param userId 用户 ID
+ * @param refIds 引用ID列表
+ */
+async function saveUserRef(
+  type: string,
+  userId: string,
+  refIds: Recordable<string>,
+) {
+  return requestClient.put(`/user/saveRef/${type}/${userId}`, refIds);
 }
 
 /**
@@ -91,6 +118,8 @@ export {
   deleteUser,
   getUserListByIds,
   getUserListPage,
+  getUserRefIdsById,
   isUserExists,
+  saveUserRef,
   updateUser,
 };

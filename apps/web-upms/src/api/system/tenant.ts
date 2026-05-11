@@ -1,12 +1,12 @@
 import type { Recordable } from '@vben/types';
 
-import type { Common } from '#/api/common/vo/base-query';
+import type { VO } from '#/api/common/vo/base';
 
 import { StatusEnum } from '#/api/common/enums/status';
 import { requestClient } from '#/api/request';
 
 export namespace TenantService {
-  export interface TenantQueryVO extends Common.BasePageVO {
+  export interface TenantQueryVO extends VO.PageVO {
     id: string;
     name: string;
   }

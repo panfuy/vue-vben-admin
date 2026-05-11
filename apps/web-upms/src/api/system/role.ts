@@ -1,12 +1,12 @@
 import type { Recordable } from '@vben/types';
 
-import type { Common } from '#/api/common/vo/base-query';
+import type { VO } from '#/api/common/vo/base';
 
 import { StatusEnum } from '#/api/common/enums/status';
 import { requestClient } from '#/api/request';
 
 export namespace RoleService {
-  export interface RoleQueryVO extends Common.BasePageVO {
+  export interface RoleQueryVO extends VO.PageVO {
     code: string;
     name: string;
   }
@@ -63,10 +63,21 @@ async function isRoleCodeExists(code: string) {
 /**
  * 获取角色列表数据
  */
-async function getRoleListPage(params: Recordable<RoleService.RoleQueryVO>) {
-  return requestClient.post<Array<RoleService.RoleVO>>(
+async function getRoleListPage(params: Recordable<RoleService.RoleQueryVO>): Promise<VO.PageVO<RoleService.RoleVO>> {
+  return requestClient.post<VO.PageVO<RoleService.RoleVO>>(
     '/role/queryByPage',
     params,
+  );
+}
+/**
+ * 根据ID查询角色集合
+ * @param ids 集合
+ * @returns 角色列表
+ */
+async function getRoleListByIds(ids: string[]) {
+  return requestClient.post<Array<RoleService.RoleVO>>(
+    '/role/queryListByIds',
+    ids,
   );
 }
 
@@ -98,6 +109,7 @@ async function deleteRole(id: string) {
 export {
   createRole,
   deleteRole,
+  getRoleListByIds,
   getRoleListPage,
   getRoleRefIdsById,
   isRoleCodeExists,

@@ -28,7 +28,7 @@ export function GenderOptions() {
       color: 'error',
     },
     {
-      label: $t('common.gender.unknown'),
+      label: $t('common.unknown'),
       value: GenderEnum.UNKNOWN,
       color: 'warning',
     },

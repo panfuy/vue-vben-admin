@@ -27,10 +27,10 @@ import {
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
+import SettingsUser from '#/views/system/user/modules/settings-user.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
-import SettingsUser from './modules/settings-user.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -167,7 +167,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues: any) => {
           return await getTenantListPage({
-            currPage: page.currentPage,
+            current: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
           });
@@ -223,6 +223,11 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
 function onSaveRefMenu(tenantId: any, refIds: any) {
   saveTenantRef('MENU', tenantId, refIds.menuIds);
 }
+
+function onSaveRefUser(tenantId: any, refIds: any) {
+  saveTenantRef('USER', tenantId, refIds.userIds);
+}
+
 
 /**
  * 将Antd的Modal.confirm封装为promise，方便在异步函数中调用。
@@ -303,7 +308,7 @@ function onCreate() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <MenuDrawer @success="onSaveRefMenu" />
-    <UserModal @success="onRefresh" />
+    <UserModal @success="onSaveRefUser" />
     <Grid :table-title="$t('system.tenant.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

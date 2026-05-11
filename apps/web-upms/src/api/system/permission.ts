@@ -1,11 +1,11 @@
 import type { Recordable } from '@vben/types';
 
-import type { Common } from '#/api/common/vo/base-query';
+import type { VO } from '#/api/common/vo/base';
 
 import { requestClient } from '#/api/request';
 
 export namespace PermissionService {
-  export interface PermissionQueryVO extends Common.BasePageVO {
+  export interface PermissionQueryVO extends VO.PageVO {
     code: string;
     /** 权限描述 */
     description: string;

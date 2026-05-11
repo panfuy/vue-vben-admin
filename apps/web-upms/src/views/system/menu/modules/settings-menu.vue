@@ -34,12 +34,12 @@ const [Form, formApi] = useVbenForm({
 const menuTreeData = ref<DataNode[]>([]);
 const menuLoadingShow = ref(false);
 
-const id = ref();
+const handerId = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
-    emits('success', id.value,  values);
+    emits('success', handerId.value,  values);
     drawerApi.close();
   },
 
@@ -50,9 +50,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
       if (data) {
         formData.value = data;
-        id.value = data.id;
+        handerId.value = data.id;
       } else {
-        id.value = undefined;
+        handerId.value = undefined;
       }
 
       if (menuTreeData.value.length === 0) {

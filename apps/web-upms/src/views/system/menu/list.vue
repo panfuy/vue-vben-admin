@@ -168,7 +168,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues: any) => {
           return await getMenuList({
-            currPage: page.currentPage,
+            current: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
           });

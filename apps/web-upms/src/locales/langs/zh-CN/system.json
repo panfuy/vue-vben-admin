@@ -68,7 +68,7 @@
       "activePathMustExist": "该路径未能找到有效的菜单"
     },
     "settings": {
-      "setMenu": "配置菜单"
+      "setMenu": "关联菜单"
     }
   },
   "role": {
@@ -82,6 +82,12 @@
       "status": "状态",
       "remark": "备注",
       "createTime": "创建时间"
+    },
+    "settings": {
+      "setRole": "关联角色",
+      "beSelected": "待选择角色",
+      "selected": "已选择角色",
+      "searchTips": "搜索角色"
     }
   },
   "tenant": {
@@ -112,6 +118,12 @@
       "status": "状态",
       "remark": "备注",
       "createTime": "创建时间"
+    },
+    "settings": {
+      "setUser": "关联用户",
+      "beSelected": "待选择用户",
+      "selected": "已选择用户",
+      "searchTips": "搜索用户"
     }
   },
   "permission": {
@@ -127,7 +139,7 @@
       "createTime": "创建时间"
     },
     "settings": {
-      "setPermission": "配置权限"
+      "setPermission": "关联权限"
     }
   }
 }

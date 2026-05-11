@@ -7,7 +7,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { RoleService } from '#/api/system/role';
 
-import { Page, useVbenDrawer } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -28,6 +28,7 @@ import {
 import { $t } from '#/locales';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
 import SettingsPermissions from '#/views/system/permission/modules/settings-permission.vue';
+import SettingsUser from '#/views/system/user/modules/settings-user.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
@@ -37,6 +38,13 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
   destroyOnClose: false,
   closeOnPressEscape: true,
 });
+
+const [UserModal, userModalApi] = useVbenModal({
+  connectedComponent: SettingsUser,
+  destroyOnClose: true,
+  closeOnPressEscape: true,
+});
+
 const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsMenu,
   destroyOnClose: false,
@@ -77,7 +85,7 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
     case 'user': {
       // 查询此角色拥有的菜单ID
       getRoleRefIdsById('USER', e.row.id).then((userIds) => {
-        // TODO: 打开用户列表页面
+        userModalApi.setData({ ...e.row, userIds }).open();
       });
       break;
     }
@@ -85,21 +93,30 @@ function onActionClick(e: OnActionClickParams<RoleService.RoleVO>) {
 }
 
 /**
+ * 保存用户引用
+ * @param roleId  角色ID
+ * @param data  处理后的数据
+ */
+function onSaveRefUser(roleId: string, data: any) {
+  saveRoleRef('USER', roleId, data.userIds);
+}
+
+/**
  * 保存菜单引用
  * @param roleId 角色ID
- * @param refIds 菜单ID数组
+ * @param data 处理后的数据
  */
-function onSaveRefMenu(roleId: any, refIds: any) {
-  saveRoleRef('MENU', roleId, refIds.menuIds);
+function onSaveRefMenu(roleId: string, data: any) {
+  saveRoleRef('MENU', roleId, data.menuIds);
 }
 
 /**
  * 保存权限引用
  * @param roleId  角色ID
- * @param refIds  权限ID数组
+ * @param data  处理后的数据
  */
-function onSaveRefPermission(roleId: any, refIds: any) {
-  saveRoleRef('PERMISSION', roleId, refIds.permissionIds);
+function onSaveRefPermission(roleId: string, data: any) {
+  saveRoleRef('PERMISSION', roleId, data.permissionIds);
 }
 
 /**
@@ -290,7 +307,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues: any) => {
           return await getRoleListPage({
-            currPage: page.currentPage,
+            current: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
           });
@@ -314,6 +331,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
+    <UserModal @success="onSaveRefUser" />
     <MenuDrawer @success="onSaveRefMenu" />
     <PermissionsDrawer @success="onSaveRefPermission" />
     <Grid :table-title="$t('system.role.list')">

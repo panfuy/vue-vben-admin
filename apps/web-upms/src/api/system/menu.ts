@@ -1,11 +1,11 @@
 import type { Recordable } from '@vben/types';
 
-import type { Common } from '#/api/common/vo/base-query';
+import type { VO } from '#/api/common/vo/base';
 
 import { requestClient } from '#/api/request';
 
 export namespace MenuService {
-  export interface MenuQueryVO extends Common.BasePageVO {
+  export interface MenuQueryVO extends VO.PageVO {
     code: string;
     name: string;
   }

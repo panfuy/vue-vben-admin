@@ -7,15 +7,16 @@ import type {
 } from '#/adapter/vxe-table';
 import type { UserService } from '#/api/system/user';
 
-import { Page, useVbenDrawer } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getStatus, StatusEnum,StatusOptions } from '#/api/common/enums/status';
-import { deleteUser, getUserListPage, updateUser } from '#/api/system/user';
+import { deleteUser, getUserListPage, getUserRefIdsById, saveUserRef, updateUser } from '#/api/system/user';
 import { $t } from '#/locales';
+import SettingsRole from '#/views/system/role/modules/settings-role.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
@@ -24,6 +25,11 @@ import { GenderOptions } from './user-gender';
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true,
+});
+const [RoleModal, roleModalApi] = useVbenModal({
+  connectedComponent: SettingsRole,
+  destroyOnClose: true,
+  closeOnPressEscape: true,
 });
 
 function useGridFormSchema(): VbenFormSchema[] {
@@ -158,7 +164,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues: any) => {
           return await getUserListPage({
-            currPage: page.currentPage,
+            current: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
           });
@@ -190,7 +196,10 @@ function onActionClick(e: OnActionClickParams<UserService.UserVO>) {
       break;
     }
     case 'role': {
-      // TODO: 角色分配
+      // 查询此角色拥有的管理员ID
+      getUserRefIdsById('ROLE', e.row.id).then((roleIds) => {
+        roleModalApi.setData({ ...e.row, roleIds }).open();
+      });
       break;
     }
   }
@@ -264,6 +273,10 @@ function onRefresh() {
   gridApi.query();
 }
 
+function onSaveRefRole(userId: any, data: any) {
+  saveUserRef('ROLE', userId, data.roleIds);
+}
+
 function onCreate() {
   formDrawerApi.setData({}).open();
 }
@@ -271,6 +284,7 @@ function onCreate() {
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
+    <RoleModal @success="onSaveRefRole" />
     <MenuDrawer @success="onRefresh" />
     <Grid :table-title="$t('system.user.list')">
       <template #toolbar-tools>
