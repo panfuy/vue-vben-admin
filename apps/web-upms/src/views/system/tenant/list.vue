@@ -27,7 +27,7 @@ import {
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
-import SettingsUser from '#/views/system/user/modules/settings-user.vue';
+import SettingsUser from '#/views/system/user/modules/settings-user-role.vue';
 
 import { onStatusShow } from './common';
 import Form from './modules/form.vue';
@@ -224,8 +224,14 @@ function onSaveRefMenu(tenantId: any, refIds: any) {
   saveTenantRef('MENU', tenantId, refIds.menuIds);
 }
 
-function onSaveRefUser(tenantId: any, refIds: any) {
-  saveTenantRef('USER', tenantId, refIds.userIds);
+function onSaveRefUser(tenantId: any, selectedUserData: any) {
+  // 选择用户完成后，要选择角色
+
+}
+
+function onSaveRefUserSetp2(tenantId: any, refIds: any) {
+  // 选择用户完成后，要选择角色
+  // saveTenantRef('USER', tenantId, refIds.userIds);
 }
 
 

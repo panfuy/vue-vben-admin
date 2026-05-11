@@ -11,3 +11,14 @@ export function onStatusShow(row: TenantService.TenantVO) {
   }
   return true; // 可修改
 }
+
+/**
+ * 设置用户页面展示的项
+ */
+export interface SettingUserItem {
+  id: string;
+  title: string;
+  email: string;
+  phone: string;
+}
+;
