@@ -412,7 +412,7 @@ defineExpose({
           "
         />
         <div v-else class="h-4 w-4"></div>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1 item-checkbox">
           <Checkbox
             v-if="multiple"
             :model-value="isSelected && !isNodeDisabled(item)"
@@ -430,7 +430,8 @@ defineExpose({
             "
           />
           <div
-            class="flex items-center gap-1"
+            class="flex items-center gap-1 item-checkbox"
+            :title="get(item.value, labelField)"
             @click="
               (event: MouseEvent) => {
                 if (isNodeDisabled(item)) {
@@ -478,6 +479,11 @@ defineExpose({
   height: 30px;
   background-color: #f3f3f3;
   border: 1px solid #666;
+}
+
+.item-checkbox{
+  width: 100%;
+  overflow: hidden;
 }
 
 /* 1. 声明过渡效果 */
