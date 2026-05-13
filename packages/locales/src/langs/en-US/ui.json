@@ -9,7 +9,11 @@
     "startWith": "{0} must start with `{1}`",
     "invalidURL": "Please input a valid URL",
     "sizeLimit": "The file size cannot exceed {0}MB",
-    "previewWarning": "Unable to open the file, there is no available URL or preview address"
+    "previewWarning": "Unable to open the file, there is no available URL or preview address",
+    "notMatch": "{0} does not meet the requirements ({1})",
+    "onlyLetterNumber":"Only allow letters, numbers, underscores, hyphens and dots.",
+    "email": "Please enter the correct email format.",
+    "phone": "Please enter the correct phone number format."
   },
   "actionTitle": {
     "edit": "Modify {0}",
