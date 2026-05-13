@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VO } from '#/api/common/vo/base';
 import type { UserService } from '#/api/system/user';
-import type {SettingUserItem} from '#/views/system/user/common';
+import type {Item} from '#/views/system/common';
 
 import { ref, watch } from 'vue';
 
@@ -10,6 +10,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button, Input, List, Pagination, Spin } from 'ant-design-vue';
 
 import { getUserListByIds, getUserListPage } from '#/api/system/user';
+import { convertUserItem } from '#/views/system/common';
 
 
 // 响应的事件
@@ -17,11 +18,11 @@ const emits = defineEmits(['success']);
 // 传入的待处理ID
 const handerId = ref<string>('');
 // 右侧已选择的用户
-const selectedData = ref<SettingUserItem[]>([]);
+const selectedData = ref<Item.User[]>([]);
 const loading = ref(false);
 // 左侧待选择的用户
 const leftSearchText = ref('');
-const leftDataSource = ref<SettingUserItem[]>([]);
+const leftDataSource = ref<Item.User[]>([]);
 const leftPagination = ref<VO.PageVO>({ current: 1, pageSize: 10, total: 0 });
 
 const [Modal, modalApi] = useVbenModal({
@@ -55,7 +56,7 @@ async function loadSelectedData(selectedIds: string[]) {
   }
   // 根据已选择的用户ID加载详细信息
   const res = (await getUserListByIds(selectedIds)) as UserService.UserVO[];
-  selectedData.value = convertItem(res || []);
+  selectedData.value = convertUserItem(res || []);
 }
 
 async function loadLeftData() {
@@ -66,26 +67,13 @@ async function loadLeftData() {
       current: leftPagination.value.current,
       pageSize: leftPagination.value.pageSize,
     } as any)) as VO.PageVO<UserService.UserVO>;
-    leftDataSource.value = convertItem(res?.records || []);
+    leftDataSource.value = convertUserItem(res?.records || []);
     leftPagination.value.total = res?.total || 0;
   } finally {
     loading.value = false;
   }
 }
 
-const convertItem = (records: UserService.UserVO[]): SettingUserItem[] => {
-  return (
-    records.map((item: UserService.UserVO) => ({
-      id: item.id,
-      email: item.email || '',
-      phone: item.phone || '',
-      title:
-        item.lastName || item.firstName
-          ? `${item.name} (${item.lastName} ${item.firstName})`
-          : item.name || '',
-    })) || []
-  );
-};
 
 watch(leftSearchText, () => {
   leftPagination.value.current = 1;

@@ -123,7 +123,11 @@
       "setUser": "Configure User",
       "beSelected": "To be selected User",
       "selected": "Selected User",
-      "searchTips": "Search User"
+      "searchTips": "Search User",
+      "setUserRole": "Set User Role",
+      "roleTitle": "Role",
+      "selectRole": "Select role",
+      "selectUserTip": "Please select a user from the middle list first"
     }
   },
   "permission": {

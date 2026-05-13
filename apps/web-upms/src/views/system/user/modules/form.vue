@@ -10,8 +10,8 @@ import { useVbenForm, z } from '#/adapter/form';
 import { StatusEnum, StatusOptions } from '#/api/common/enums/status';
 import { createUser, updateUser } from '#/api/system/user';
 import { $t } from '#/locales';
+import { isRecordEdit } from '#/views/system/common';
 
-import { onStatusShow } from '../common';
 import { GenderEnum, GenderOptions } from '../user-gender';
 
 const emits = defineEmits(['success']);
@@ -103,7 +103,7 @@ function useFormSchema(): VbenFormSchema[] {
       rules: 'required',
       dependencies: {
         disabled() {
-          return !onStatusShow(formData.value as UserService.UserVO);
+          return !isRecordEdit(formData.value);
         },
         triggerFields: ['status', 'source'],
       },

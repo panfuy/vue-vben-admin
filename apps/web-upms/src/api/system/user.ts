@@ -1,5 +1,7 @@
 import type { Recordable } from '@vben/types';
 
+import type { RoleService } from './role';
+
 import type { VO } from '#/api/common/vo/base';
 
 import { StatusEnum } from '#/api/common/enums/status';
@@ -25,6 +27,7 @@ export namespace UserService {
     source?: string;
     status: StatusEnum;
     remark?: string;
+    roleList?: Array<RoleService.RoleVO>;
   }
 }
 
@@ -58,6 +61,17 @@ async function getUserListPage(params: Recordable<UserService.UserQueryVO>): Pro
 async function getUserListByIds(ids: string[]) {
   return requestClient.post<Array<UserService.UserVO>>(
     '/user/queryListByIds',
+    ids,
+  );
+}
+/**
+ * 根据ID查询用户+角色集合
+ * @param ids 集合
+ * @returns 用户列表+角色列表
+ */
+async function getUserListRolesByIds(ids: string[]) {
+  return requestClient.post<Array<UserService.UserVO>>(
+    '/user/queryListRolesByIds',
     ids,
   );
 }
@@ -118,6 +132,7 @@ export {
   deleteUser,
   getUserListByIds,
   getUserListPage,
+  getUserListRolesByIds,
   getUserRefIdsById,
   isUserExists,
   saveUserRef,

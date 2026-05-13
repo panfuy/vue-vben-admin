@@ -123,7 +123,11 @@
       "setUser": "关联用户",
       "beSelected": "待选择用户",
       "selected": "已选择用户",
-      "searchTips": "搜索用户"
+      "searchTips": "搜索用户",
+      "setUserRole": "设置用户角色",
+      "roleTitle": "角色",
+      "selectRole": "请选择角色",
+      "selectUserTip": "请先在中间列表选择用户"
     }
   },
   "permission": {

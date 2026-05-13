@@ -9,8 +9,7 @@ import { useVbenForm, z } from '#/adapter/form';
 import { StatusEnum, StatusOptions } from '#/api/common/enums/status';
 import { createRole, isRoleCodeExists, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
-
-import { onStatusShow } from '../common';
+import { isRecordEdit } from '#/views/system/common';
 
 const emits = defineEmits(['success']);
 
@@ -72,7 +71,7 @@ const [Form, formApi] = useVbenForm({
       label: $t('system.role.field.status'),
       dependencies: {
         disabled() {
-          return !onStatusShow(formData.value as RoleService.RoleVO);
+          return !isRecordEdit(formData.value);
         },
         triggerFields: ['status','code'],
       },

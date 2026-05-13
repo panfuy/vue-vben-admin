@@ -15,8 +15,7 @@ import {
   updateTenant,
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
-
-import { onStatusShow } from '../common';
+import { isRecordEdit } from '#/views/system/common';
 
 const emits = defineEmits(['success']);
 
@@ -112,7 +111,7 @@ function useFormSchema(): VbenFormSchema[] {
       label: $t('system.tenant.field.status'),
       dependencies: {
         disabled() {
-          return !onStatusShow(formData.value as TenantService.TenantVO);
+          return !isRecordEdit(formData.value);
         },
         triggerFields: ['status', 'source'],
       },

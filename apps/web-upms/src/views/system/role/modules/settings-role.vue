@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { VO } from '#/api/common/vo/base';
 import type { RoleService } from '#/api/system/role';
+import type {Item} from '#/views/system/common';
 
 import { ref, watch } from 'vue';
 
@@ -9,24 +10,18 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button, Input, List, Pagination, Spin } from 'ant-design-vue';
 
 import { getRoleListByIds, getRoleListPage } from '#/api/system/role';
-
-// 显示的角色信息
-interface RoleItem {
-  id: string;
-  title: string;
-  description: string;
-}
+import { convertRoleItem } from '#/views/system/common';
 
 // 响应的事件
 const emits = defineEmits(['success']);
 // 传入的待处理ID
 const handerId = ref<string>('');
 // 右侧已选择的用户
-const selectedData = ref<RoleItem[]>([]);
+const selectedData = ref<Item.Role[]>([]);
 const loading = ref(false);
 // 左侧待选择的用户
 const leftSearchText = ref('');
-const leftDataSource = ref<RoleItem[]>([]);
+const leftDataSource = ref<Item.Role[]>([]);
 const leftPagination = ref<VO.PageVO>({ current: 1, pageSize: 10, total: 0 });
 
 const [Modal, modalApi] = useVbenModal({
@@ -61,7 +56,7 @@ async function loadSelectedData(selectedIds: string[]) {
   }
   // 根据已选择的用户ID加载详细信息
   const res = (await getRoleListByIds(selectedIds)) as RoleService.RoleVO[];
-  selectedData.value = convertItem(res || []);
+  selectedData.value = convertRoleItem(res || []);
 }
 
 async function loadLeftData() {
@@ -72,22 +67,12 @@ async function loadLeftData() {
       current: leftPagination.value.current,
       pageSize: leftPagination.value.pageSize,
     } as any)) as VO.PageVO<RoleService.RoleVO>;
-    leftDataSource.value = convertItem(res?.records || []);
+    leftDataSource.value = convertRoleItem(res?.records || []);
     leftPagination.value.total = res?.total || 0;
   } finally {
     loading.value = false;
   }
 }
-
-const convertItem = (records: RoleService.RoleVO[]): RoleItem[] => {
-  return (
-    records.map((item: RoleService.RoleVO) => ({
-      id: item.id,
-      title: `${item.name} (${item.code})`,
-      description: item.description || '',
-    })) || []
-  );
-};
 
 watch(leftSearchText, () => {
   leftPagination.value.current = 1;

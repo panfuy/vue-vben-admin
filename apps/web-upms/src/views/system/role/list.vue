@@ -26,11 +26,11 @@ import {
   updateRole,
 } from '#/api/system/role';
 import { $t } from '#/locales';
+import { isRecordEdit } from '#/views/system/common';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
 import SettingsPermissions from '#/views/system/permission/modules/settings-permission.vue';
 import SettingsUser from '#/views/system/user/modules/settings-user.vue';
 
-import { onStatusShow } from './common';
 import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -147,7 +147,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(newStatus: StatusEnum, row: RoleService.RoleVO) {
   // 只有source字段为空字符串的角色才可以操作状态
-  if (!onStatusShow(row)) {
+  if (!isRecordEdit(row)) {
     message.warning('该角色状态不可修改');
     return false;
   }
@@ -242,7 +242,7 @@ function useColumns(): VxeTableGridColumns {
     },
     {
       cellRender: {
-        attrs: { beforeChange: onStatusChange, isShow: onStatusShow },
+        attrs: { beforeChange: onStatusChange, isShow: isRecordEdit },
         name: 'CellSwitch',
       },
       field: 'status',

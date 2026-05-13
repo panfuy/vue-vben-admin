@@ -26,10 +26,10 @@ import {
   updateTenant,
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
+import { isRecordEdit } from '#/views/system/common';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
 import SettingsUser from '#/views/system/user/modules/settings-user-role.vue';
 
-import { onStatusShow } from './common';
 import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -111,7 +111,7 @@ function useColumns(): VxeTableGridColumns {
     },
     {
       cellRender: {
-        attrs: { beforeChange: onStatusChange, isShow: onStatusShow },
+        attrs: { beforeChange: onStatusChange, isShow: isRecordEdit },
         name: 'CellSwitch',
       },
       field: 'status',
@@ -266,7 +266,7 @@ async function onStatusChange(
   row: TenantService.TenantVO,
 ) {
   // 只有source字段为空字符串的租户才可以操作状态
-  if (!onStatusShow(row)) {
+  if (!isRecordEdit(row)) {
     message.warning('该租户状态不可修改');
     return false;
   }

@@ -16,9 +16,9 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getStatus, StatusEnum,StatusOptions } from '#/api/common/enums/status';
 import { deleteUser, getUserListPage, getUserRefIdsById, saveUserRef, updateUser } from '#/api/system/user';
 import { $t } from '#/locales';
+import { isRecordEdit } from '#/views/system/common';
 import SettingsRole from '#/views/system/role/modules/settings-role.vue';
 
-import { onStatusShow } from './common';
 import Form from './modules/form.vue';
 import { GenderOptions } from './user-gender';
 
@@ -112,7 +112,7 @@ function useColumns(): VxeTableGridColumns {
     },
     {
       cellRender: {
-        attrs: { beforeChange: onStatusChange, isShow: onStatusShow },
+        attrs: { beforeChange: onStatusChange, isShow: isRecordEdit },
         name: 'CellSwitch',
       },
       field: 'status',
@@ -233,7 +233,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(newStatus: StatusEnum, row: UserService.UserVO) {
   // 只有source字段为空字符串的租户才可以操作状态
-  if (!onStatusShow(row)) {
+  if (!isRecordEdit(row)) {
     message.warning('该租户状态不可修改');
     return false;
   }
