@@ -160,7 +160,7 @@
   },
 
   "debug.onTaskErrors": "debugAnyway",
-  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.ignoreTrimWhitespace": true,
   "npm.packageManager": "pnpm",
 
   "css.validate": false,
