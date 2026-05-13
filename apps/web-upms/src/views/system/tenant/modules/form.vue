@@ -39,9 +39,9 @@ function useFormSchema(): VbenFormSchema[] {
         .max(32, $t('ui.formRules.maxLength', [$t('system.tenant.field.id'), 32]))
         .regex(
           /^[\w.-]+$/,
-          $t('common.formRules.notMatch', [
+          $t('ui.formRules.notMatch', [
             $t('system.tenant.field.id'),
-            $t('common.formRules.onlyLetterNumber'),
+            $t('ui.formRules.onlyLetterNumber'),
           ]),
         )
         .refine(
@@ -69,9 +69,9 @@ function useFormSchema(): VbenFormSchema[] {
         .max(100, $t('ui.formRules.maxLength', [$t('system.tenant.field.name'), 100]))
         .regex(
           /^[\w.-]+$/,
-          $t('common.formRules.notMatch', [
+          $t('ui.formRules.notMatch', [
             $t('system.tenant.field.name'),
-            $t('common.formRules.onlyLetterNumber'),
+            $t('ui.formRules.onlyLetterNumber'),
           ]),
         )
         .refine(

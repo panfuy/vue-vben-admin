@@ -75,6 +75,7 @@ async function loadData() {
 }
 
 </script>
+
 <template>
   <Drawer :title="$t('system.permission.settings.setPermission')">
     <Form>
@@ -82,13 +83,13 @@ async function loadData() {
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
           <Tree
             class="permissions-tree"
-            :style="{ '--select-all-text': `'${$t('common.selectAll')}'` }"
             :tree-data="permissionTreeData"
             multiple
             bordered
             v-bind="slotProps"
             value-field="id"
             label-field="code"
+            :select-all-label="$t('common.selectAll')"
           >
             <template #node="{ value }">
               <span class="permission-tree-node-text">
@@ -101,6 +102,7 @@ async function loadData() {
     </Form>
   </Drawer>
 </template>
+
 <style lang="css" scoped>
 :deep(.ant-tree-title) {
   .tree-actions {
@@ -112,12 +114,6 @@ async function loadData() {
   .tree-actions {
     @apply ml-5 flex flex-auto justify-end;
   }
-}
-
-:deep(.permissions-tree .size-5)::after {
-  margin-left: 0.5rem;
-  color: inherit;
-  content: var(--select-all-text, 'Select All');
 }
 
 :deep(.permissions-tree .permission-tree-node-text) {

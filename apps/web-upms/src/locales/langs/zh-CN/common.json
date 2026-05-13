@@ -1,14 +1,4 @@
 {
-  "selectAll": "全选",
-  "append": "添加",
-  "remove": "移除",
-  "appended": "已添加",
-  "formRules": {
-    "notMatch": "{0} 不符合要求（{1}）",
-    "onlyLetterNumber": "只允许 字母、数字、下划线、短横线、点",
-    "email": "请输入正确的邮箱格式",
-    "phone": "请输入正确的电话号码格式"
-  },
   "gender": {
     "male": "男",
     "female": "女"

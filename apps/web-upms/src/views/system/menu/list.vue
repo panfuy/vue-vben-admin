@@ -6,6 +6,7 @@ import type {
   VxeTableGridColumns,
   VxeTableGridOptions
 } from '#/adapter/vxe-table';
+import type{ MenuService } from '#/api/system/menu';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon, Plus } from '@vben/icons';
@@ -15,9 +16,15 @@ import { MenuBadge } from '@vben-core/menu-ui';
 
 import { Button, message } from 'ant-design-vue';
 
+import { ModalAsync } from '#/adapter/modal';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { StatusOptions } from '#/api/common/enums/status';
-import { deleteMenu, getMenuList, MenuService } from '#/api/system/menu';
+import {
+  getStatus,
+  StatusEnum,
+  StatusOptions,
+} from '#/api/common/enums/status';
+import { deleteMenu, getMenuList, updateMenu } from '#/api/system/menu';
+import { isRecordEdit } from '#/views/system/common';
 
 import { getMenuTypeOptions } from './common';
 import Form from './modules/form.vue';
@@ -118,12 +125,14 @@ function useColumns(
       title: $t('system.menu.field.component'),
     },
     {
-      cellRender: { name: 'CellTag' },
+      cellRender: {
+        attrs: { beforeChange: onStatusChange },
+        name: 'CellSwitch',
+      },
       field: 'status',
-      title: $t('system.menu.field.status'),
+      title: $t('system.role.field.status'),
       width: 100,
     },
-
     {
       align: 'right',
       cellRender: {
@@ -223,6 +232,31 @@ function onCreate() {
 }
 function onAppend(row: MenuService.MenuVO) {
   formDrawerApi.setData({ parentId: row.id }).open();
+}
+
+/**
+ * 状态开关即将改变
+ * @param newStatus 期望改变的状态值
+ * @param row 行数据
+ * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
+ */
+async function onStatusChange(newStatus: StatusEnum, row: MenuService.MenuVO) {
+  // 只有source字段为空字符串的角色才可以操作状态
+  if (!isRecordEdit(row)) {
+        message.warning(`${$t('system.common.message.statusNoModify')}`);
+    return false;
+  }
+
+  try {
+    await ModalAsync.confirm(
+      `${$t('system.common.message.statusSwitchTips', [row.name, getStatus(newStatus)?.label])}`,
+      `${$t('system.common.message.statusSwitch')}`,
+    );
+    await updateMenu({ id: row.id, status: newStatus });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function onDelete(row: MenuService.MenuVO) {

@@ -14,6 +14,8 @@ import { useVbenForm } from '#/adapter/form';
 import { getMenuTreeList } from '#/api/system/menu';
 import { $t } from '#/locales';
 
+import { MenuTypeEnum } from '../common';
+
 const emits = defineEmits(['success']);
 
 const formData = ref<any>();
@@ -79,13 +81,13 @@ async function loadData() {
 
 function getNodeClass(node: Recordable<any>) {
   const classes: string[] = [];
-  if (node.value?.type === 'button') {
+  if (node.value?.type === MenuTypeEnum.BUTTON) {
     classes.push('inline-flex');
   }
-
   return classes.join(' ');
 }
 </script>
+
 <template>
   <Drawer :title="$t('system.menu.settings.setMenu')">
     <Form>
@@ -93,7 +95,6 @@ function getNodeClass(node: Recordable<any>) {
         <Spin :spinning="menuLoadingShow" wrapper-class-name="w-full">
           <Tree
             class="menus-tree"
-            :style="{ '--select-all-text': `'${$t('common.selectAll')}'` }"
             :tree-data="menuTreeData"
             multiple
             bordered
@@ -104,6 +105,7 @@ function getNodeClass(node: Recordable<any>) {
             value-field="id"
             label-field="title"
             icon-field="meta.icon"
+            :select-all-label="$t('common.selectAll')"
           >
             <template #node="{ value }">
               <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
@@ -115,6 +117,7 @@ function getNodeClass(node: Recordable<any>) {
     </Form>
   </Drawer>
 </template>
+
 <style lang="css" scoped>
 :deep(.ant-tree-title) {
   .tree-actions {
@@ -128,9 +131,4 @@ function getNodeClass(node: Recordable<any>) {
   }
 }
 
-:deep(.menus-tree .size-5)::after {
-  margin-left: 0.5rem;
-  color: inherit;
-  content: var(--select-all-text, 'Select All');
-}
 </style>

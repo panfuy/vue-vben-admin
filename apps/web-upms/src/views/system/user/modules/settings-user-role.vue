@@ -7,12 +7,13 @@ import type { Item } from '#/views/system/common';
 import { computed, ref, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
-import { Button, Empty, Input, List, Pagination, Select, Spin, Tag } from 'ant-design-vue';
+import { Button, Empty, Input, List, message, Pagination, Select, Spin,Tag } from 'ant-design-vue';
 
 import { getRoleListPage } from '#/api/system/role';
-import { getUserListByIds, getUserListPage } from '#/api/system/user';
-import { convertRoleItem,convertUserItem } from '#/views/system/common';
+import { getUserListPage, getUserListRolesByIds } from '#/api/system/user';
+import { convertRoleItem, convertUserItem } from '#/views/system/common';
 
 // 响应的事件
 const emits = defineEmits(['success']);
@@ -42,9 +43,16 @@ const [Modal, modalApi] = useVbenModal({
     // 构建返回数据：每个用户及其对应的角色列表
     const userRolesList = leftDataSelected.value.map((user) => ({
       userId: user.id,
-      roleIds: user.roles?.map((r) => r.id) || [],
+      roleIds: user.roles?.filter((r) => r.id).map((r) => r.id) || [], // 过滤掉未选择的角色（roleId为空的项）
     }));
     modalApi.lock();
+    // 若是用户对应的角色ids为空，弹出提示阻止提交
+    if (userRolesList.some((item) => item.roleIds.length === 0)) {
+      message.error(`${$t('system.user.message.noselectRoles')}`);
+      modalApi.unlock();
+      return;
+    }
+    // 回传提交数据
     emits('success', handerId.value, { userRolesList });
     modalApi.close();
   },
@@ -71,9 +79,8 @@ async function loadSelectedData(selectedIds: string[]) {
     return;
   }
   // 根据已选择的用户ID加载详细信息
-  const res = (await getUserListByIds(selectedIds)) as UserService.UserVO[];
-  const users = convertUserItem(res || []);
-  leftDataSelected.value = users;
+  const res = (await getUserListRolesByIds(selectedIds)) as UserService.UserVO[];
+  leftDataSelected.value = convertUserItem(res || []);
 }
 
 async function loadLeftData() {
@@ -119,9 +126,16 @@ function handleRoleSearch(value: string) {
   }, 300);
 }
 
+// 左侧搜索防抖定时器
+let leftSearchTimer: null | ReturnType<typeof setTimeout> = null;
 watch(leftSearchText, () => {
-  leftPagination.value.current = 1;
-  loadLeftData();
+  if (leftSearchTimer) {
+    clearTimeout(leftSearchTimer);
+  }
+  leftSearchTimer = setTimeout(() => {
+    leftPagination.value.current = 1;
+    loadLeftData();
+  }, 300);
 });
 
 function handleLeftPageChange(page: number) {
@@ -237,10 +251,17 @@ function handleRoleChange(roleId: string | undefined, index: number) {
   }
 }
 
-// 可用的角色选项（从roleListData获取，包含已选中的角色）
+/**
+ * 可用的角色选项（从roleListData获取，包含已选中的角色，已选中角色禁用）
+ */
 const availableRoleOptions = computed(() => {
   const currentUser = leftDataSelected.value.find((u) => u.id === currentUserId.value);
   const userRoles = currentUser?.roles || [];
+
+  // 已选中的角色ID集合（排除当前正在编辑的项）
+  const selectedRoleIds = new Set(
+    userRoles.filter((r) => r.id).map((r) => r.id),
+  );
 
   // 合并可选角色列表和用户已选择的角色，确保已选中的角色能显示
   const roleIds = new Set(getRoleListData().map((r) => r.id));
@@ -250,12 +271,17 @@ const availableRoleOptions = computed(() => {
   return allRoles.map((role) => ({
     value: role.id,
     label: role.title,
+    disabled: selectedRoleIds.has(role.id),
   }));
 });
 
 function handlerRoleFocus() {
   // 角色搜索时清空筛选条件
   roleSearchText.value = '';
+}
+
+function getRoleCount(roles?: Item.Role[]){
+  return roles?.filter((r) => r.id).length || 0;
 }
 
 // 当前用户是否可以编辑角色
@@ -302,10 +328,10 @@ const canEditRole = computed(() => {
                     size="small"
                     @click="handleSelect(item.id)"
                   >
-                    {{ $t('common.append') }}
+                    {{ $t('common.add') }}
                   </Button>
                   <span v-else class="added-tag">{{
-                    $t('common.appended')
+                    $t('common.added')
                   }}</span>
                 </List.Item>
               </template>
@@ -347,7 +373,7 @@ const canEditRole = computed(() => {
                   <div class="item-sub-title">{{ item.phone }}</div>
                   <div class="item-sub-title">{{ item.email }}</div>
                 </div>
-                <Tag color="blue">{{ item.roles?.length || 0 }} {{ $t('system.user.settings.roleTitle') }}</Tag>
+                <Tag :color="getRoleCount(item.roles) > 0 ? 'blue' : '#ff3860'">{{ getRoleCount(item.roles) }} {{ $t('system.user.settings.roleTitle') }}</Tag>
                 <Button
                   type="link"
                   danger
@@ -368,7 +394,7 @@ const canEditRole = computed(() => {
         <div class="panel-header">
           <span>{{ $t('system.role.settings.setRole') }}</span>
           <Button v-if="canEditRole" type="link" size="small" @click="handleAddRole">
-            {{ $t('common.append') }}{{ $t('system.user.settings.roleTitle') }}
+            {{ $t('common.add') }}{{ $t('system.user.settings.roleTitle') }}
           </Button>
         </div>
         <div class="panel-content">
@@ -512,8 +538,8 @@ const canEditRole = computed(() => {
 }
 
 :deep(.item-list.is-current-selected) {
-  background-color: #fff1b8;
-  border-left: 3px solid #faad14;
+  background-color: #fff1b8b7;
+  border-left: 3px solid #faad14b4;
 }
 
 .item-info {

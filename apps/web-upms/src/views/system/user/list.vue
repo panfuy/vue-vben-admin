@@ -10,8 +10,9 @@ import type { UserService } from '#/api/system/user';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
+import { ModalAsync } from '#/adapter/modal';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getStatus, StatusEnum,StatusOptions } from '#/api/common/enums/status';
 import { deleteUser, getUserListPage, getUserRefIdsById, saveUserRef, updateUser } from '#/api/system/user';
@@ -206,26 +207,6 @@ function onActionClick(e: OnActionClickParams<UserService.UserVO>) {
 }
 
 /**
- * 将Antd的Modal.confirm封装为promise，方便在异步函数中调用。
- * @param content 提示内容
- * @param title 提示标题
- */
-function confirm(content: string, title: string) {
-  return new Promise((reslove, reject) => {
-    Modal.confirm({
-      content,
-      onCancel() {
-        reject(new Error('已取消'));
-      },
-      onOk() {
-        reslove(true);
-      },
-      title,
-    });
-  });
-}
-
-/**
  * 状态开关即将改变
  * @param newStatus 期望改变的状态值
  * @param row 行数据
@@ -234,14 +215,14 @@ function confirm(content: string, title: string) {
 async function onStatusChange(newStatus: StatusEnum, row: UserService.UserVO) {
   // 只有source字段为空字符串的租户才可以操作状态
   if (!isRecordEdit(row)) {
-    message.warning('该租户状态不可修改');
+    message.warning(`${$t('system.common.message.statusNoModify')}`);
     return false;
   }
 
   try {
-    await confirm(
-      `你要将${row.name}的状态切换为 【${getStatus(newStatus)?.label}】 吗？`,
-      `切换状态`,
+    await ModalAsync.confirm(
+      `${$t('system.common.message.statusSwitchTips', [row.name, getStatus(newStatus)?.label])}`,
+      `${$t('system.common.message.statusSwitch')}`,
     );
     await updateUser({ id: row.id, status: newStatus });
     return true;

@@ -74,9 +74,16 @@ async function loadLeftData() {
   }
 }
 
+// 左侧搜索防抖定时器
+let leftSearchTimer: null | ReturnType<typeof setTimeout> = null;
 watch(leftSearchText, () => {
-  leftPagination.value.current = 1;
-  loadLeftData();
+  if (leftSearchTimer) {
+    clearTimeout(leftSearchTimer);
+  }
+  leftSearchTimer = setTimeout(() => {
+    leftPagination.value.current = 1;
+    loadLeftData();
+  }, 300);
 });
 
 function handleLeftPageChange(page: number) {
@@ -146,9 +153,9 @@ const isSelected = (id: string) => {
                     size="small"
                     @click="handleSelect(item.id)"
                   >
-                    {{ $t('common.append') }}
+                    {{ $t('common.add') }}
                   </Button>
-                  <span v-else class="added-tag">{{ $t('common.appended') }}</span>
+                  <span v-else class="added-tag">{{ $t('common.added') }}</span>
                 </List.Item>
               </template>
             </List>

@@ -78,9 +78,12 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
-
+      // 处理token
       config.headers.Authorization = formatToken(accessStore.accessToken);
+      // 设置用户语言
       config.headers['Accept-Language'] = preferences.app.locale;
+      // 处理租户
+
       return config;
     },
   });

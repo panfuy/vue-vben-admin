@@ -59,9 +59,9 @@ const schema: VbenFormSchema[] = [
       .max(100, $t('ui.formRules.maxLength', [$t('system.permission.field.code'), 100]))
       .regex(
         /^[\w.-]+$/,
-        $t('common.formRules.notMatch', [
+        $t('ui.formRules.notMatch', [
           $t('system.permission.field.code'),
-          $t('common.formRules.onlyLetterNumber'),
+          $t('ui.formRules.onlyLetterNumber'),
         ]),
       )
       .refine(

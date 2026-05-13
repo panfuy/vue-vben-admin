@@ -8,6 +8,11 @@
       "createSub": "新增下级",
       "user": "用户",
       "role": "角色"
+    },
+    "message":{
+      "statusSwitch":"切换状态",
+      "statusSwitchTips":"你要将【{0}】的状态切换为【{1}】吗？",
+      "statusNoModify":"此记录为内置数据其状态不可修改"
     }
   },
   "dept": {
@@ -128,6 +133,9 @@
       "roleTitle": "角色",
       "selectRole": "请选择角色",
       "selectUserTip": "请先在中间列表选择用户"
+    },
+    "message": {
+      "noselectRoles": "请给用户至少关联一个角色"
     }
   },
   "permission": {

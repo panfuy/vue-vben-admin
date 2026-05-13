@@ -83,7 +83,7 @@ function useFormSchema(): VbenFormSchema[] {
       component: 'Input',
       fieldName: 'email',
       label: $t('system.user.field.email'),
-      rules: z.string().email($t('common.formRules.email')).optional(),
+      rules: z.string().email($t('ui.formRules.email')).optional(),
     },
     {
       component: 'Input',

@@ -33,9 +33,9 @@ const [Form, formApi] = useVbenForm({
         .max(30, $t('ui.formRules.maxLength', [$t('system.role.field.code'), 30]))
         .regex(
           /^[\w.-]+$/,
-          $t('common.formRules.notMatch', [
+          $t('ui.formRules.notMatch', [
             $t('system.role.field.code'),
-            $t('common.formRules.onlyLetterNumber'),
+            $t('ui.formRules.onlyLetterNumber'),
           ]),
         )
         .refine(

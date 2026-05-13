@@ -18,6 +18,7 @@ interface PlaygroundPreferencesExtension {
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
+    id: import.meta.env.VITE_APP_ID,
     name: import.meta.env.VITE_APP_TITLE,
   },
 });

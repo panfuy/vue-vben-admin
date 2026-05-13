@@ -27,7 +27,7 @@ import {
 import { $t } from '#/locales';
 import { componentKeys, componentPaths } from '#/router/routes';
 
-import { getMenuTypeOptions } from '../common';
+import { getMenuTypeOptions, MenuTypeEnum, MenuTypeUtil } from '../common';
 
 const emit = defineEmits<{
   success: [];
@@ -43,7 +43,7 @@ const schema: VbenFormSchema[] = [
       options: getMenuTypeOptions(),
       optionType: 'button',
     },
-    defaultValue: 'MENU',
+    defaultValue: MenuTypeEnum.MENU,
     fieldName: 'type',
     formItemClass: 'col-span-2 md:col-span-2',
     label: $t('system.menu.field.type'),
@@ -135,7 +135,8 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return ['CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type,
+        MenuTypeEnum.CATALOG, MenuTypeEnum.EMBEDDED, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -170,7 +171,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['EMBEDDED', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.EMBEDDED, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -202,7 +203,8 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return ['CATALOG', 'EMBEDDED', 'LINK', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type,
+        MenuTypeEnum.CATALOG, MenuTypeEnum.EMBEDDED, MenuTypeEnum.LINK, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -216,7 +218,8 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return ['CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type,
+        MenuTypeEnum.CATALOG, MenuTypeEnum.EMBEDDED, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -235,10 +238,10 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       rules: (values) => {
-        return values.type === 'MENU' ? 'required' : null;
+        return values.type === MenuTypeEnum.MENU ? 'required' : null;
       },
       show: (values) => {
-        return values.type === 'MENU';
+        return values.type === MenuTypeEnum.MENU;
       },
       triggerFields: ['type'],
     },
@@ -249,7 +252,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['EMBEDDED', 'LINK'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.EMBEDDED, MenuTypeEnum.LINK);
       },
       triggerFields: ['type'],
     },
@@ -261,10 +264,11 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       rules: (values) => {
-        return values.type === 'BUTTON' ? 'required' : null;
+        return values.type === MenuTypeEnum.BUTTON ? 'required' : null;
       },
       show: (values) => {
-        return ['BUTTON', 'CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type,
+        MenuTypeEnum.BUTTON, MenuTypeEnum.CATALOG, MenuTypeEnum.EMBEDDED, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -287,7 +291,7 @@ const schema: VbenFormSchema[] = [
     component: 'Divider',
     dependencies: {
       show: (values) => {
-        return !['BUTTON'].includes(values.type);
+        return !MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.BUTTON);
       },
       triggerFields: ['type'],
     },
@@ -312,7 +316,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'BUTTON';
+        return values.type !== MenuTypeEnum.BUTTON;
       },
       triggerFields: ['type'],
     },
@@ -330,7 +334,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'BUTTON';
+        return values.type !== MenuTypeEnum.BUTTON;
       },
       triggerFields: ['type'],
     },
@@ -349,7 +353,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'BUTTON';
+        return values.type !== MenuTypeEnum.BUTTON;
       },
       triggerFields: ['type'],
     },
@@ -360,7 +364,7 @@ const schema: VbenFormSchema[] = [
     component: 'Divider',
     dependencies: {
       show: (values) => {
-        return !['BUTTON'].includes(values.type);
+        return !MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.BUTTON);
       },
       triggerFields: ['type'],
     },
@@ -377,7 +381,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.MENU);
       },
       triggerFields: ['type'],
     },
@@ -392,7 +396,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['EMBEDDED', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.MENU, MenuTypeEnum.EMBEDDED);
       },
       triggerFields: ['type'],
     },
@@ -407,7 +411,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['BUTTON'].includes(values.type);
+        return !MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.BUTTON);
       },
       triggerFields: ['type'],
     },
@@ -422,7 +426,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['CATALOG', 'MENU'].includes(values.type);
+        return MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.MENU, MenuTypeEnum.CATALOG);
       },
       triggerFields: ['type'],
     },
@@ -437,7 +441,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['BUTTON', 'LINK'].includes(values.type);
+        return !MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.BUTTON, MenuTypeEnum.LINK);
       },
       triggerFields: ['type'],
     },
@@ -452,7 +456,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['BUTTON', 'LINK'].includes(values.type);
+        return !MenuTypeUtil.isTypeExist(values.type, MenuTypeEnum.BUTTON, MenuTypeEnum.LINK);
       },
       triggerFields: ['type'],
     },
@@ -482,9 +486,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = drawerApi.getData<MenuService.MenuVO>();
-      if (data?.type === 'LINK') {
+      if (data?.type === MenuTypeEnum.LINK) {
         data.linkSrc = data.meta?.link;
-      } else if (data?.type === 'EMBEDDED') {
+      } else if (data?.type === MenuTypeEnum.EMBEDDED) {
         data.linkSrc = data.meta?.iframeSrc;
       }
       if (data) {
@@ -507,9 +511,9 @@ async function onSubmit() {
     drawerApi.lock();
     const data =
       await formApi.getValues<Omit<MenuService.MenuVO, 'children' | 'id'>>();
-    if (data.type === 'LINK') {
+    if (data.type === MenuTypeEnum.LINK) {
       data.meta = { ...data.meta, link: data.linkSrc };
-    } else if (data.type === 'EMBEDDED') {
+    } else if (data.type === MenuTypeEnum.EMBEDDED) {
       data.meta = { ...data.meta, iframeSrc: data.linkSrc };
     }
     delete data.linkSrc;
