@@ -340,13 +340,16 @@ defineExpose({
           :class="{ 'rotate-90': expanded?.length > 0 }"
           class="text-foreground/80 hover:text-foreground size-4 cursor-pointer transition"
         />
-        <Checkbox
-          v-if="multiple"
-          :model-value="selectAllStatus"
-          :indeterminate="selectAllStatus === 'indeterminate'"
-          @click.stop
-          @update:model-value="onSelectAllChange"
-        />
+        <div class="flex items-center gap-1 item-all-checkbox">
+          <Checkbox
+            v-if="multiple"
+            :model-value="selectAllStatus"
+            :indeterminate="selectAllStatus === 'indeterminate'"
+            @click.stop
+            @update:model-value="onSelectAllChange"
+          />
+          <span v-if="selectAllLabel">{{ selectAllLabel }}</span>
+        </div>
       </div>
     </div>
     <TransitionGroup :name="transition ? 'fade' : ''">
@@ -394,8 +397,9 @@ defineExpose({
             !isNodeDisabled(item) && onToggle(item);
           }
         "
-        class="tree-node focus:ring-grass8 my-0.5 flex items-center rounded p-1 outline-hidden focus:ring-2"
+        class="tree-node focus:ring-grass8 my-0.5 flex items-center rounded p-1 outline-hidden"
       >
+      <!-- class="hover:ring-2" 鼠标移动上去时2px的圆环边框 -->
         <ChevronRight
           v-if="
             item.hasChildren &&
@@ -484,6 +488,15 @@ defineExpose({
 .item-checkbox{
   width: 100%;
   overflow: hidden;
+}
+
+.item-all-checkbox{
+  width: 100%;
+  overflow: hidden;
+
+  .text-label{
+    margin-left: 8px;
+  }
 }
 
 /* 1. 声明过渡效果 */
