@@ -231,6 +231,7 @@ describe('preferences', () => {
       ...defaultPreferences,
       app: {
         ...defaultPreferences.app,
+        id: "app.id",
         name: 'New App Name',
       },
     };

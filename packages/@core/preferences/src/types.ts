@@ -143,6 +143,10 @@ interface AppPreferences {
    * @zh_CN 是否开启首选项导航栏吸顶效果
    */
   enableStickyPreferencesNavigationBar: boolean;
+  /**
+   * @zh_CN 应用唯一标识
+   */
+  id: string;
   /** 是否移动端 */
   isMobile: boolean;
   /** 布局方式 */
