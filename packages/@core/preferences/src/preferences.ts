@@ -119,6 +119,11 @@ class PreferenceManager {
       return;
     }
 
+    // 检查app必须配置项（app.id/app.name）
+    if (!overrides?.app?.id || !overrides?.app?.name) {
+      throw new Error('[app.id] and [app.name] must be configured');
+    }
+
     // 使用命名空间初始化存储管理器
     this.cache = new StorageManager({ prefix: namespace });
 
@@ -176,11 +181,7 @@ class PreferenceManager {
    * 更新扩展偏好设置
    * @param updates - 要更新的扩展偏好设置
    */
-  updateCustomPreferences = <
-    TCustomPreferences extends object = CustomPreferencesRecord,
-  >(
-    updates: DeepPartial<TCustomPreferences>,
-  ) => {
+  updateCustomPreferences = (updates: DeepPartial<object>) => {
     if (!this.customPreferencesExtension) {
       return;
     }
