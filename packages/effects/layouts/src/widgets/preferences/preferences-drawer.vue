@@ -165,7 +165,9 @@ const shortcutKeysGlobalSearch = defineModel<boolean>(
 const shortcutKeysGlobalLogout = defineModel<boolean>(
   'shortcutKeysGlobalLogout',
 );
-const shortcutKeysGlobalEscape = defineModel<boolean>('shortcutKeysGlobalEscape');
+const shortcutKeysGlobalEscape = defineModel<boolean>(
+  'shortcutKeysGlobalEscape',
+);
 
 const shortcutKeysGlobalLockScreen = defineModel<boolean>(
   'shortcutKeysGlobalLockScreen',
