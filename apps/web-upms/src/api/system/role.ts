@@ -44,7 +44,7 @@ async function getRoleRefIdsById(type: string, roleId: string) {
 async function saveRoleRef(
   type: string,
   roleId: string,
-  refIds: Recordable<string>,
+  refIds: Array<string>,
 ) {
   return requestClient.put(`/role/saveRef/${type}/${roleId}`, refIds);
 }
@@ -63,10 +63,14 @@ async function isRoleCodeExists(code: string) {
 /**
  * 获取角色列表数据
  */
-async function getRoleListPage(params: Recordable<RoleService.RoleQueryVO>): Promise<VO.PageVO<RoleService.RoleVO>> {
+async function getRoleListPage(
+  params: Partial<RoleService.RoleQueryVO>,
+  headers?: Recordable<number | string>,
+): Promise<VO.PageVO<RoleService.RoleVO>> {
   return requestClient.post<VO.PageVO<RoleService.RoleVO>>(
     '/role/queryByPage',
     params,
+    { headers },
   );
 }
 /**
@@ -74,7 +78,7 @@ async function getRoleListPage(params: Recordable<RoleService.RoleQueryVO>): Pro
  * @param ids 集合
  * @returns 角色列表
  */
-async function getRoleListByIds(ids: string[]) {
+async function getRoleListByIds(ids: Array<string>) {
   return requestClient.post<Array<RoleService.RoleVO>>(
     '/role/queryListByIds',
     ids,
@@ -85,7 +89,7 @@ async function getRoleListByIds(ids: string[]) {
  * 创建角色
  * @param data 角色数据
  */
-async function createRole(data: Omit<RoleService.RoleVO, 'id'>) {
+async function createRole(data: Omit<RoleService.RoleVO, 'children' | 'id'>) {
   return requestClient.put('/role/save', data);
 }
 
@@ -94,7 +98,7 @@ async function createRole(data: Omit<RoleService.RoleVO, 'id'>) {
  *
  * @param data 角色数据
  */
-async function updateRole(data: Partial<RoleService.RoleVO>) {
+async function updateRole(data: Omit<RoleService.RoleVO, 'children'>) {
   return requestClient.put('/role/update', data);
 }
 

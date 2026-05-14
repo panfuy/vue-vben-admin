@@ -4,7 +4,7 @@
 import type { AxiosResponseHeaders, RequestClientOptions } from '@vben/request';
 
 import { useAppConfig } from '@vben/hooks';
-import { preferences } from '@vben/preferences';
+import { usePreferences } from '@vben/preferences';
 import {
   authenticateResponseInterceptor,
   defaultResponseInterceptor,
@@ -17,9 +17,12 @@ import { cloneDeep } from '@vben/utils';
 import { message } from 'ant-design-vue';
 import JSONBigInt from 'json-bigint';
 
+import { VO } from '#/api/common/vo/base';
 import { useAuthStore } from '#/store';
 
 import { refreshTokenApi } from './core';
+
+const { app, locale } = usePreferences();
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -49,10 +52,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
     accessStore.setAccessToken(null);
-    if (
-      preferences.app.loginExpiredMode === 'modal' &&
-      accessStore.isAccessChecked
-    ) {
+    if (app.loginExpiredMode === 'modal' && accessStore.isAccessChecked) {
       accessStore.setLoginExpired(true);
     } else {
       await authStore.logout();
@@ -81,8 +81,12 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       // 处理token
       config.headers.Authorization = formatToken(accessStore.accessToken);
       // 设置用户语言
-      config.headers['Accept-Language'] = preferences.app.locale;
-      // 处理租户
+      config.headers['Accept-Language'] = locale.value;
+      // 处理租户：支持在单次请求中通过传入headers覆盖默认租户ID
+      const tenantId = config.headers[VO.tenantHeaderKey] ?? app.id;
+      if (tenantId) {
+        config.headers[VO.tenantHeaderKey] = tenantId;
+      }
 
       return config;
     },
@@ -103,7 +107,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       client,
       doReAuthenticate,
       doRefreshToken,
-      enableRefreshToken: preferences.app.enableRefreshToken,
+      enableRefreshToken: app.enableRefreshToken,
       formatToken,
     }),
   );
@@ -128,9 +132,3 @@ export const requestClient = createRequestClient(apiURL, {
 });
 
 export const baseRequestClient = new RequestClient({ baseURL: apiURL });
-
-export interface PageFetchParams {
-  [key: string]: any;
-  pageNo?: number;
-  pageSize?: number;
-}

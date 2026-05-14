@@ -1,5 +1,3 @@
-import type { Recordable } from '@vben/types';
-
 import type { VO } from '#/api/common/vo/base';
 
 import { requestClient } from '#/api/request';
@@ -10,7 +8,7 @@ export namespace PermissionService {
     /** 权限描述 */
     description: string;
   }
-export interface PermissionVO {
+  export interface PermissionVO {
     [key: string]: any;
     /** 子级 */
     children?: PermissionVO[];
@@ -30,7 +28,9 @@ export interface PermissionVO {
 /**
  * 获取权限数据列表
  */
-async function getPermissionList(params: Recordable<PermissionService.PermissionQueryVO>) {
+async function getPermissionList(
+  params: Partial<PermissionService.PermissionQueryVO>,
+) {
   return requestClient.post<Array<PermissionService.PermissionVO>>(
     '/permission/queryByPage',
     params,
@@ -42,7 +42,9 @@ async function getPermissionList(params: Recordable<PermissionService.Permission
  * @returns  权限树列表
  */
 async function getPermissionTreeList() {
-  return requestClient.get<Array<PermissionService.PermissionVO>>('/permission/tree');
+  return requestClient.get<Array<PermissionService.PermissionVO>>(
+    '/permission/tree',
+  );
 }
 
 /**
@@ -50,7 +52,9 @@ async function getPermissionTreeList() {
  * @returns  集合
  */
 async function getPermissionAllRootList() {
-  return requestClient.get<Array<PermissionService.PermissionVO>>('/permission/getAllRoot');
+  return requestClient.get<Array<PermissionService.PermissionVO>>(
+    '/permission/getAllRoot',
+  );
 }
 
 /**
@@ -59,7 +63,10 @@ async function getPermissionAllRootList() {
  * @param id
  * @returns
  */
-async function isPermissionCodeExists(code: string, id?: PermissionService.PermissionVO['id']) {
+async function isPermissionCodeExists(
+  code: string,
+  id?: PermissionService.PermissionVO['id'],
+) {
   return requestClient.get<boolean>('/permission/checkExists', {
     params: { id, code },
   });
@@ -69,7 +76,9 @@ async function isPermissionCodeExists(code: string, id?: PermissionService.Permi
  * 创建权限
  * @param data 权限数据
  */
-async function createPermission(data: Omit<PermissionService.PermissionVO, 'children' | 'id'>) {
+async function createPermission(
+  data: Omit<PermissionService.PermissionVO, 'children' | 'id'>,
+) {
   return requestClient.put('/permission/save', data);
 }
 

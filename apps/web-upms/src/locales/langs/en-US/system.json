@@ -9,6 +9,14 @@
       "user": "User",
       "role": "Role"
     },
+    "field": {
+      "remark": "Remark",
+      "status": "Status",
+      "createBy": "Created By",
+      "createTime": "Creation Time",
+      "updateBy": "Updated By",
+      "updateTime": "Updated Time"
+    },
     "message": {
       "statusSwitch": "Switch Status",
       "statusSwitchTips": "Are you going to switch the status of [{0}] to [{1}]?",
@@ -21,7 +29,6 @@
     "deptName": "Department Name",
     "status": "Status",
     "createTime": "Create Time",
-    "remark": "Remark",
     "operation": "Operation",
     "parentDept": "Parent Department"
   },
@@ -40,7 +47,6 @@
       "activePath": "Active Path",
       "path": "Route Path",
       "component": "Component",
-      "status": "Status",
       "sort": "Sort",
       "badgeVariants": "Badge Style",
       "authCode": "Auth Code",
@@ -82,10 +88,7 @@
       "id": "Role ID",
       "code": "Role Code",
       "name": "Role Name",
-      "sort": "Sort",
-      "status": "Status",
-      "remark": "Remark",
-      "createTime": "Creation Time"
+      "sort": "Sort"
     },
     "settings": {
       "setRole": "Configure Role",
@@ -103,10 +106,7 @@
       "id": "AppID",
       "name": "App Name",
       "shortName": "App Shortname",
-      "nickName": "App Nickname",
-      "status": "Status",
-      "remark": "Remark",
-      "createTime": "Creation Time"
+      "nickName": "App Nickname"
     }
   },
   "user": {
@@ -119,10 +119,7 @@
       "lastName": "Last Name",
       "gender": "Gender",
       "email": "Email",
-      "phone": "Phone",
-      "status": "Status",
-      "remark": "Remark",
-      "createTime": "Creation Time"
+      "phone": "Phone"
     },
     "settings": {
       "setUser": "Configure User",
@@ -146,9 +143,7 @@
       "parent": "Parent Permission",
       "source": "Source",
       "code": "Code",
-      "description": "Description",
-      "remark": "Remark",
-      "createTime": "Creation Time"
+      "description": "Description"
     },
     "settings": {
       "setPermission": "Configure permission"

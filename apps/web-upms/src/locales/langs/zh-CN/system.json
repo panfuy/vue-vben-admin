@@ -9,6 +9,14 @@
       "user": "用户",
       "role": "角色"
     },
+    "field": {
+      "remark": "备注",
+      "status": "状态",
+      "createBy": "创建人",
+      "createTime": "创建时间",
+      "updateBy": "更新人",
+      "updateTime": "更新时间"
+    },
     "message":{
       "statusSwitch":"切换状态",
       "statusSwitchTips":"你要将【{0}】的状态切换为【{1}】吗？",
@@ -56,10 +64,8 @@
       "title": "标题",
       "parent": "上级菜单",
       "path": "路由地址",
-      "status": "状态",
       "type": "类型",
-      "sort": "排序",
-      "createTime": "创建时间"
+      "sort": "排序"
     },
     "type": {
       "button": "按钮",
@@ -83,10 +89,7 @@
     "field": {
       "code": "角色编码",
       "name": "角色名称",
-      "sort": "排序",
-      "status": "状态",
-      "remark": "备注",
-      "createTime": "创建时间"
+      "sort": "排序"
     },
     "settings": {
       "setRole": "关联角色",
@@ -103,10 +106,7 @@
       "id": "应用ID",
       "name": "应用名称",
       "shortName": "应用简称",
-      "nickName": "应用别称",
-      "status": "状态",
-      "remark": "备注",
-      "createTime": "创建时间"
+      "nickName": "应用别称"
     }
   },
   "user": {
@@ -119,10 +119,7 @@
       "lastName": "名字",
       "gender": "性别",
       "email": "邮箱",
-      "phone": "电话",
-      "status": "状态",
-      "remark": "备注",
-      "createTime": "创建时间"
+      "phone": "电话"
     },
     "settings": {
       "setUser": "关联用户",
@@ -146,9 +143,7 @@
       "parent": "上级权限",
       "source": "来源",
       "code": "编码",
-      "description": "描述",
-      "remark": "备注",
-      "createTime": "创建时间"
+      "description": "描述"
     },
     "settings": {
       "setPermission": "关联权限"

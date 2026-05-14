@@ -4,9 +4,9 @@ import type {
   OnActionClickFn,
   OnActionClickParams,
   VxeTableGridColumns,
-  VxeTableGridOptions
+  VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type{ MenuService } from '#/api/system/menu';
+import type { MenuService } from '#/api/system/menu';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon, Plus } from '@vben/icons';
@@ -32,7 +32,6 @@ import Form from './modules/form.vue';
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true, // 关闭时销毁
-  closeOnPressEscape: true, // Esc按钮为关闭事件
 });
 
 function useGridFormSchema(): VbenFormSchema[] {
@@ -54,12 +53,12 @@ function useGridFormSchema(): VbenFormSchema[] {
         options: StatusOptions(),
       },
       fieldName: 'status',
-      label: $t('system.menu.field.status'),
+      label: $t('system.common.field.status'),
     },
     {
       component: 'RangePicker',
       fieldName: 'createTime',
-      label: $t('system.menu.field.createTime'),
+      label: $t('system.common.field.createTime'),
     },
   ];
 }
@@ -130,8 +129,23 @@ function useColumns(
         name: 'CellSwitch',
       },
       field: 'status',
-      title: $t('system.role.field.status'),
+      title: $t('system.common.field.status'),
       width: 100,
+    },
+    {
+      field: 'remark',
+      minWidth: 100,
+      title: $t('system.common.field.remark'),
+    },
+    {
+      field: 'updateBy',
+      title: $t('system.common.field.updateBy'),
+      width: 140,
+    },
+    {
+      field: 'updateTime',
+      title: $t('system.common.field.updateTime'),
+      width: 140,
     },
     {
       align: 'right',
@@ -155,7 +169,7 @@ function useColumns(
       headerAlign: 'center',
       showOverflow: false,
       title: $t('system.common.columns.operation'),
-      width: 200,
+      width: 'auto',
     },
   ];
 }
@@ -243,7 +257,7 @@ function onAppend(row: MenuService.MenuVO) {
 async function onStatusChange(newStatus: StatusEnum, row: MenuService.MenuVO) {
   // 只有source字段为空字符串的角色才可以操作状态
   if (!isRecordEdit(row)) {
-        message.warning(`${$t('system.common.message.statusNoModify')}`);
+    message.warning(`${$t('system.common.message.statusNoModify')}`);
     return false;
   }
 

@@ -99,7 +99,7 @@ function useFormSchema(): VbenFormSchema[] {
       },
       defaultValue: StatusEnum.ENABLED,
       fieldName: 'status',
-      label: $t('system.user.field.status'),
+      label: $t('system.common.field.status'),
       rules: 'required',
       dependencies: {
         disabled() {
@@ -114,7 +114,7 @@ function useFormSchema(): VbenFormSchema[] {
         rows: 4, // 设置行数，影响高度
       },
       fieldName: 'remark',
-      label: $t('system.user.field.remark'),
+      label: $t('system.common.field.remark'),
     },
   ];
 }

@@ -30,7 +30,10 @@ const [Form, formApi] = useVbenForm({
       rules: z
         .string()
         .min(2, $t('ui.formRules.minLength', [$t('system.role.field.code'), 2]))
-        .max(30, $t('ui.formRules.maxLength', [$t('system.role.field.code'), 30]))
+        .max(
+          30,
+          $t('ui.formRules.maxLength', [$t('system.role.field.code'), 30]),
+        )
         .regex(
           /^[\w.-]+$/,
           $t('ui.formRules.notMatch', [
@@ -68,12 +71,12 @@ const [Form, formApi] = useVbenForm({
       },
       defaultValue: StatusEnum.ENABLED,
       fieldName: 'status',
-      label: $t('system.role.field.status'),
+      label: $t('system.common.field.status'),
       dependencies: {
         disabled() {
           return !isRecordEdit(formData.value);
         },
-        triggerFields: ['status','code'],
+        triggerFields: ['status', 'code'],
       },
     },
     {
@@ -89,7 +92,7 @@ const [Form, formApi] = useVbenForm({
         rows: 4, // 设置行数，影响高度
       },
       fieldName: 'description',
-      label: $t('system.role.field.remark'),
+      label: $t('system.common.field.remark'),
     },
   ],
   showDefaultActions: false,

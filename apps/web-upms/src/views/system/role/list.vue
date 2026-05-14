@@ -10,7 +10,7 @@ import type { RoleService } from '#/api/system/role';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message} from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
 import { ModalAsync } from '#/adapter/modal';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -36,25 +36,21 @@ import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
-  destroyOnClose: false,
-  closeOnPressEscape: true,
+  destroyOnClose: false, // 关闭时销毁
 });
 
 const [UserModal, userModalApi] = useVbenModal({
   connectedComponent: SettingsUser,
-  destroyOnClose: true,
-  closeOnPressEscape: true,
+  destroyOnClose: true, // 关闭时销毁
 });
 
 const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsMenu,
-  destroyOnClose: false,
-  closeOnPressEscape: true,
+  destroyOnClose: false, // 关闭时销毁
 });
 const [PermissionsDrawer, permissionsDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsPermissions,
-  destroyOnClose: false,
-  closeOnPressEscape: true,
+  destroyOnClose: false, // 关闭时销毁
 });
 
 // class: 'w-150',
@@ -129,7 +125,7 @@ function onSaveRefPermission(roleId: string, data: any) {
 async function onStatusChange(newStatus: StatusEnum, row: RoleService.RoleVO) {
   // 只有source字段为空字符串的角色才可以操作状态
   if (!isRecordEdit(row)) {
-        message.warning(`${$t('system.common.message.statusNoModify')}`);
+    message.warning(`${$t('system.common.message.statusNoModify')}`);
     return false;
   }
 
@@ -194,12 +190,12 @@ function useGridFormSchema(): VbenFormSchema[] {
         options: StatusOptions(),
       },
       fieldName: 'status',
-      label: $t('system.role.field.status'),
+      label: $t('system.common.field.status'),
     },
     {
       component: 'RangePicker',
       fieldName: 'createTime',
-      label: $t('system.role.field.createTime'),
+      label: $t('system.common.field.createTime'),
     },
   ];
 }
@@ -219,7 +215,7 @@ function useColumns(): VxeTableGridColumns {
     {
       field: 'description',
       minWidth: 100,
-      title: $t('system.role.field.remark'),
+      title: $t('system.common.field.remark'),
     },
     {
       cellRender: {
@@ -227,18 +223,23 @@ function useColumns(): VxeTableGridColumns {
         name: 'CellSwitch',
       },
       field: 'status',
-      title: $t('system.role.field.status'),
+      title: $t('system.common.field.status'),
       width: 100,
     },
     {
       field: 'sort',
       title: $t('system.role.field.sort'),
-      width: 100,
+      width: 50,
     },
     {
-      field: 'createTime',
-      title: $t('system.role.field.createTime'),
-      width: 200,
+      field: 'updateBy',
+      title: $t('system.common.field.updateBy'),
+      width: 140,
+    },
+    {
+      field: 'updateTime',
+      title: $t('system.common.field.updateTime'),
+      width: 140,
     },
     {
       align: 'center',
@@ -269,7 +270,7 @@ function useColumns(): VxeTableGridColumns {
       field: 'operation',
       fixed: 'right',
       title: $t('system.common.columns.operation'),
-      width: 280,
+      width: 'auto',
     },
   ];
 }

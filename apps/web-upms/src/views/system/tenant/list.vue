@@ -10,7 +10,7 @@ import type { TenantService } from '#/api/system/tenant';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message} from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
 import { ModalAsync } from '#/adapter/modal';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -23,30 +23,29 @@ import {
   deleteTenant,
   getTenantListPage,
   getTenantRefIdsById,
-  saveTenantRef,
+  saveTenantRefMenu,
+  saveTenantRefUserRole,
   updateTenant,
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
 import { isRecordEdit } from '#/views/system/common';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
-import SettingsUser from '#/views/system/user/modules/settings-user-role.vue';
+import SettingsUserRole from '#/views/system/user/modules/settings-user-role.vue';
 
 import Form from './modules/form.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
-  destroyOnClose: true,
+  destroyOnClose: true, // 关闭时销毁
 });
 const [MenuDrawer, menuDrawerApi] = useVbenDrawer({
   connectedComponent: SettingsMenu,
-  destroyOnClose: true,
-  closeOnPressEscape: true,
+  destroyOnClose: true, // 关闭时销毁
 });
 
-const [UserModal, userModalApi] = useVbenModal({
-  connectedComponent: SettingsUser,
-  destroyOnClose: true,
-  closeOnPressEscape: true,
+const [UserRoleModal, userRoleModalApi] = useVbenModal({
+  connectedComponent: SettingsUserRole,
+  destroyOnClose: true, // 关闭时销毁
 });
 
 function useGridFormSchema(): VbenFormSchema[] {
@@ -68,12 +67,12 @@ function useGridFormSchema(): VbenFormSchema[] {
         options: StatusOptions(),
       },
       fieldName: 'status',
-      label: $t('system.tenant.field.status'),
+      label: $t('system.common.field.status'),
     },
     {
       component: 'RangePicker',
       fieldName: 'createTime',
-      label: $t('system.tenant.field.createTime'),
+      label: $t('system.common.field.createTime'),
     },
   ];
 }
@@ -105,24 +104,29 @@ function useColumns(): VxeTableGridColumns {
       width: 200,
     },
     {
-      align: 'left',
-      field: 'description',
-      minWidth: 100,
-      title: $t('system.tenant.field.remark'),
-    },
-    {
       cellRender: {
         attrs: { beforeChange: onStatusChange, isShow: isRecordEdit },
         name: 'CellSwitch',
       },
       field: 'status',
-      title: $t('system.tenant.field.status'),
+      title: $t('system.common.field.status'),
       width: 100,
     },
     {
-      field: 'createTime',
-      title: $t('system.tenant.field.createTime'),
-      width: 200,
+      align: 'left',
+      field: 'remark',
+      minWidth: 100,
+      title: $t('system.common.field.remark'),
+    },
+    {
+      field: 'updateBy',
+      title: $t('system.common.field.updateBy'),
+      width: 140,
+    },
+    {
+      field: 'updateTime',
+      title: $t('system.common.field.updateTime'),
+      width: 140,
     },
     {
       align: 'center',
@@ -149,7 +153,8 @@ function useColumns(): VxeTableGridColumns {
       field: 'operation',
       fixed: 'right',
       title: $t('system.common.columns.operation'),
-      width: 200,
+      width: 'auto',
+      minWidth: 400,
     },
   ];
 }
@@ -202,14 +207,18 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
     case 'menu': {
       // 查询此角色拥有的菜单ID
       getTenantRefIdsById('MENU', e.row.id).then((menuIds) => {
-        menuDrawerApi.setData({ ...e.row, menuIds }).open();
+        menuDrawerApi
+          .setData({ ...e.row, menuIds, switchTenantId: e.row.id })
+          .open();
       });
       break;
     }
     case 'user': {
       // 查询此角色拥有的管理员ID
       getTenantRefIdsById('USER', e.row.id).then((userIds) => {
-        userModalApi.setData({ ...e.row, userIds }).open();
+        userRoleModalApi
+          .setData({ ...e.row, userIds, switchTenantId: e.row.id })
+          .open();
       });
       break;
     }
@@ -219,20 +228,21 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
 /**
  * 保存菜单引用
  * @param tenantId 租户ID
- * @param refIds 菜单ID数组
+ * @param data 菜单ID数组
  */
-function onSaveRefMenu(tenantId: any, refIds: any) {
-  saveTenantRef('MENU', tenantId, refIds.menuIds);
+function onSaveRefMenu(tenantId: any, data: any) {
+  saveTenantRefMenu(tenantId, data.menuIds);
 }
 
-function onSaveRefUser(tenantId: any, selectedUserData: any) {
-  // 选择用户完成后，要选择角色
-
-}
-
-function onSaveRefUserSetp2(tenantId: any, refIds: any) {
-  // 选择用户完成后，要选择角色
-  // saveTenantRef('USER', tenantId, refIds.userIds);
+function onSaveRefUserRole(tenantId: any, data: any) {
+  // 封装返回对象封装成[{userVO, roleVO}]格式
+  const params: Array<TenantService.TenantRefUserRoleVO> = [];
+  data?.userRolesList?.forEach((item: any) => {
+    item?.roleIds?.forEach((roleId: string) => {
+      params.push({ userVO: { id: item.userId }, roleVO: { id: roleId } });
+    });
+  });
+  saveTenantRefUserRole(tenantId, params);
 }
 
 /**
@@ -294,7 +304,7 @@ function onCreate() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <MenuDrawer @success="onSaveRefMenu" />
-    <UserModal @success="onSaveRefUser" />
+    <UserRoleModal @success="onSaveRefUserRole" />
     <Grid :table-title="$t('system.tenant.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

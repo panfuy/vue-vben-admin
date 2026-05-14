@@ -36,7 +36,10 @@ function useFormSchema(): VbenFormSchema[] {
       rules: z
         .string()
         .min(2, $t('ui.formRules.minLength', [$t('system.tenant.field.id'), 2]))
-        .max(32, $t('ui.formRules.maxLength', [$t('system.tenant.field.id'), 32]))
+        .max(
+          32,
+          $t('ui.formRules.maxLength', [$t('system.tenant.field.id'), 32]),
+        )
         .regex(
           /^[\w.-]+$/,
           $t('ui.formRules.notMatch', [
@@ -65,8 +68,14 @@ function useFormSchema(): VbenFormSchema[] {
       label: $t('system.tenant.field.name'),
       rules: z
         .string()
-        .min(2, $t('ui.formRules.minLength', [$t('system.tenant.field.name'), 2]))
-        .max(100, $t('ui.formRules.maxLength', [$t('system.tenant.field.name'), 100]))
+        .min(
+          2,
+          $t('ui.formRules.minLength', [$t('system.tenant.field.name'), 2]),
+        )
+        .max(
+          100,
+          $t('ui.formRules.maxLength', [$t('system.tenant.field.name'), 100]),
+        )
         .regex(
           /^[\w.-]+$/,
           $t('ui.formRules.notMatch', [
@@ -108,7 +117,7 @@ function useFormSchema(): VbenFormSchema[] {
       },
       defaultValue: StatusEnum.ENABLED,
       fieldName: 'status',
-      label: $t('system.tenant.field.status'),
+      label: $t('system.common.field.status'),
       dependencies: {
         disabled() {
           return !isRecordEdit(formData.value);
@@ -122,7 +131,7 @@ function useFormSchema(): VbenFormSchema[] {
         rows: 4, // 设置行数，影响高度
       },
       fieldName: 'remark',
-      label: $t('system.tenant.field.remark'),
+      label: $t('system.common.field.remark'),
     },
   ];
 }

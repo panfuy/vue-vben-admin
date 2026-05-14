@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { VO } from '#/api/common/vo/base';
 import type { RoleService } from '#/api/system/role';
 import type { UserService } from '#/api/system/user';
 import type { Item } from '#/views/system/common';
@@ -9,14 +8,31 @@ import { computed, ref, watch } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { Button, Empty, Input, List, message, Pagination, Select, Spin,Tag } from 'ant-design-vue';
+import {
+  Button,
+  Empty,
+  Input,
+  List,
+  message,
+  Pagination,
+  Select,
+  Spin,
+  Tag,
+} from 'ant-design-vue';
 
+import { VO } from '#/api/common/vo/base';
 import { getRoleListPage } from '#/api/system/role';
-import { getUserListPage, getUserListRolesByIds } from '#/api/system/user';
+import {
+  getUserAllListPage,
+  getUserListPage,
+  getUserListRolesByIds,
+} from '#/api/system/user';
 import { convertRoleItem, convertUserItem } from '#/views/system/common';
 
 // 响应的事件
 const emits = defineEmits(['success']);
+// 切换租户ID，为空时表示不要切换
+const switchTenantId = ref<string>('');
 const leftLoading = ref(false);
 // 传入的待处理ID
 const handerId = ref<string>('');
@@ -26,7 +42,6 @@ const leftDataSource = ref<Item.User[]>([]);
 const leftPagination = ref<VO.PageVO>({ current: 1, pageSize: 10, total: 0 });
 // 左侧已选择的用户
 const leftDataSelected = ref<Item.User[]>([]);
-
 
 // 当前选中的用户ID
 const currentUserId = ref<string>('');
@@ -53,17 +68,23 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 回传提交数据
-    emits('success', handerId.value, { userRolesList });
+    emits('success', handerId.value, { userRolesList }, switchTenantId.value);
     modalApi.close();
   },
 
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<{ id: string; userIds: string[] }>();
+      const data = modalApi.getData<{
+        id: string;
+        switchTenantId: string;
+        userIds: string[];
+      }>();
       if (data) {
+        switchTenantId.value = data.switchTenantId;
         handerId.value = data.id;
         await loadSelectedData(data.userIds || []);
       } else {
+        switchTenantId.value = '';
         handerId.value = '';
         leftDataSelected.value = [];
       }
@@ -79,14 +100,19 @@ async function loadSelectedData(selectedIds: string[]) {
     return;
   }
   // 根据已选择的用户ID加载详细信息
-  const res = (await getUserListRolesByIds(selectedIds)) as UserService.UserVO[];
+  const res = (await getUserListRolesByIds(
+    selectedIds,
+    VO.createTenantHeader(switchTenantId.value),
+  )) as UserService.UserVO[];
   leftDataSelected.value = convertUserItem(res || []);
 }
 
 async function loadLeftData() {
   leftLoading.value = true;
   try {
-    const res = (await getUserListPage({
+    const res = (await (
+      switchTenantId.value ? getUserAllListPage : getUserListPage
+    )({
       condition: leftSearchText.value || undefined,
       current: leftPagination.value.current,
       pageSize: leftPagination.value.pageSize,
@@ -102,12 +128,16 @@ async function loadLeftData() {
 async function loadRoleListData(searchText?: string) {
   roleLoading.value = true;
   try {
-    const res = (await getRoleListPage({
-      current: 1,
-      pageSize: 100,
-      condition: searchText || undefined,
-    } as any)) as VO.PageVO<RoleService.RoleVO>;
-      (isRoleSearchNotEmpty()?roleSearchData:roleListData).value = convertRoleItem(res?.records || []);
+    const res = (await getRoleListPage(
+      {
+        current: 1,
+        pageSize: 100,
+        condition: searchText || undefined,
+      },
+      VO.createTenantHeader(switchTenantId.value),
+    )) as VO.PageVO<RoleService.RoleVO>;
+    (isRoleSearchNotEmpty() ? roleSearchData : roleListData).value =
+      convertRoleItem(res?.records || []);
   } finally {
     roleLoading.value = false;
   }
@@ -171,7 +201,7 @@ function handleRemove(id: string) {
     const prevIndex = currentIndex - 1;
     if (prevIndex >= 0 && newSelectedData[prevIndex]) {
       handleUserClick(newSelectedData[prevIndex].id);
-    } else if(newSelectedData[0]){
+    } else if (newSelectedData[0]) {
       // 如果没有上一个元素，选中第一个
       handleUserClick(newSelectedData[0].id);
     }
@@ -188,7 +218,7 @@ const isSelected = (id: string) => {
 
 // 点击用户行选中用户
 async function handleUserClick(id: string) {
-  if(currentUserId.value === id){
+  if (currentUserId.value === id) {
     return;
   }
   currentUserId.value = id;
@@ -214,7 +244,7 @@ async function handleAddRole() {
     if (!user.roles) {
       user.roles = [];
     }
-    user.roles.push({ id: '', title: '', description: '' });+
+    user.roles.push({ id: '', title: '', description: '' });
     // 重置角色列表（动态加载）
     await loadRoleListData();
   }
@@ -247,7 +277,11 @@ function handleRoleChange(roleId: string | undefined, index: number) {
   const user = leftDataSelected.value.find((u) => u.id === currentUserId.value);
   if (role && user?.roles) {
     // 创建新对象而不是使用引用，避免roleListData更新时影响用户角色数据
-    user.roles[index] = { id: role.id, title: role.title, description: role.description };
+    user.roles[index] = {
+      id: role.id,
+      title: role.title,
+      description: role.description,
+    };
   }
 }
 
@@ -255,7 +289,9 @@ function handleRoleChange(roleId: string | undefined, index: number) {
  * 可用的角色选项（从roleListData获取，包含已选中的角色，已选中角色禁用）
  */
 const availableRoleOptions = computed(() => {
-  const currentUser = leftDataSelected.value.find((u) => u.id === currentUserId.value);
+  const currentUser = leftDataSelected.value.find(
+    (u) => u.id === currentUserId.value,
+  );
   const userRoles = currentUser?.roles || [];
 
   // 已选中的角色ID集合（排除当前正在编辑的项）
@@ -265,7 +301,9 @@ const availableRoleOptions = computed(() => {
 
   // 合并可选角色列表和用户已选择的角色，确保已选中的角色能显示
   const roleIds = new Set(getRoleListData().map((r) => r.id));
-  const selectedRolesNotInList = userRoles.filter((r) => r.id && !roleIds.has(r.id));
+  const selectedRolesNotInList = userRoles.filter(
+    (r) => r.id && !roleIds.has(r.id),
+  );
   const allRoles = [...getRoleListData(), ...selectedRolesNotInList];
 
   return allRoles.map((role) => ({
@@ -280,7 +318,7 @@ function handlerRoleFocus() {
   roleSearchText.value = '';
 }
 
-function getRoleCount(roles?: Item.Role[]){
+function getRoleCount(roles?: Item.Role[]) {
   return roles?.filter((r) => r.id).length || 0;
 }
 
@@ -330,9 +368,7 @@ const canEditRole = computed(() => {
                   >
                     {{ $t('common.add') }}
                   </Button>
-                  <span v-else class="added-tag">{{
-                    $t('common.added')
-                  }}</span>
+                  <span v-else class="added-tag">{{ $t('common.added') }}</span>
                 </List.Item>
               </template>
             </List>
@@ -373,7 +409,10 @@ const canEditRole = computed(() => {
                   <div class="item-sub-title">{{ item.phone }}</div>
                   <div class="item-sub-title">{{ item.email }}</div>
                 </div>
-                <Tag :color="getRoleCount(item.roles) > 0 ? 'blue' : '#ff3860'">{{ getRoleCount(item.roles) }} {{ $t('system.user.settings.roleTitle') }}</Tag>
+                <Tag :color="getRoleCount(item.roles) > 0 ? 'blue' : '#ff3860'">
+{{ getRoleCount(item.roles) }}
+                  {{ $t('system.user.settings.roleTitle') }}
+</Tag>
                 <Button
                   type="link"
                   danger
@@ -393,14 +432,22 @@ const canEditRole = computed(() => {
       <div class="role-panel" :class="{ 'is-disabled': !canEditRole }">
         <div class="panel-header">
           <span>{{ $t('system.role.settings.setRole') }}</span>
-          <Button v-if="canEditRole" type="link" size="small" @click="handleAddRole">
+          <Button
+            v-if="canEditRole"
+            type="link"
+            size="small"
+            @click="handleAddRole"
+          >
             {{ $t('common.add') }}{{ $t('system.user.settings.roleTitle') }}
           </Button>
         </div>
         <div class="panel-content">
           <Spin :spinning="roleLoading">
             <!-- 当前选中用户的角色列表（通过函数获取） -->
-              <div v-if="canEditRole && getCurrentUserRoles().length > 0" class="role-list">
+            <div
+              v-if="canEditRole && getCurrentUserRoles().length > 0"
+              class="role-list"
+            >
               <div
                 v-for="(role, index) in getCurrentUserRoles()"
                 :key="role?.id ?? index"
@@ -598,7 +645,7 @@ const canEditRole = computed(() => {
   white-space: nowrap;
 }
 
-.empty-list{
+.empty-list {
   padding: 20px;
 }
 </style>

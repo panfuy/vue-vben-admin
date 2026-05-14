@@ -11,13 +11,15 @@ import { IconifyIcon } from '@vben/icons';
 import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
+import { VO } from '#/api/common/vo/base';
 import { getMenuTreeList } from '#/api/system/menu';
 import { $t } from '#/locales';
 
 import { MenuTypeEnum } from '../common';
 
 const emits = defineEmits(['success']);
-
+// 切换租户ID，为空时表示不要切换
+const switchTenantId = ref<string>('');
 const formData = ref<any>();
 
 const [Form, formApi] = useVbenForm({
@@ -41,7 +43,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
-    emits('success', handerId.value,  values);
+    emits('success', handerId.value, values, switchTenantId.value);
     drawerApi.close();
   },
 
@@ -49,12 +51,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       const data = drawerApi.getData<any>();
       formApi.resetForm();
-
       if (data) {
         formData.value = data;
         handerId.value = data.id;
+        switchTenantId.value = data.switchTenantId;
       } else {
-        handerId.value = undefined;
+        handerId.value = '';
+        switchTenantId.value = '';
       }
 
       if (menuTreeData.value.length === 0) {
@@ -72,7 +75,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
 async function loadData() {
   menuLoadingShow.value = true;
   try {
-    const res = await getMenuTreeList();
+    const res = await getMenuTreeList(
+      VO.createTenantHeader(switchTenantId.value),
+    );
     menuTreeData.value = res as unknown as DataNode[];
   } finally {
     menuLoadingShow.value = false;
@@ -130,5 +135,4 @@ function getNodeClass(node: Recordable<any>) {
     @apply ml-5 flex flex-auto justify-end;
   }
 }
-
 </style>

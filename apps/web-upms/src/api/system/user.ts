@@ -47,9 +47,25 @@ async function isUserExists(id: string) {
  * @param params 查询参数
  * @returns 用户列表
  */
-async function getUserListPage(params: Recordable<UserService.UserQueryVO>): Promise<VO.PageVO<UserService.UserVO>> {
+async function getUserListPage(
+  params: Partial<UserService.UserQueryVO>,
+): Promise<VO.PageVO<UserService.UserVO>> {
   return requestClient.post<VO.PageVO<UserService.UserVO>>(
     '/user/queryByPage',
+    params,
+  );
+}
+
+/**
+ * 查询用户列表-跨租户
+ * @param params 查询参数
+ * @returns 用户列表
+ */
+async function getUserAllListPage(
+  params: Partial<UserService.UserQueryVO>,
+): Promise<VO.PageVO<UserService.UserVO>> {
+  return requestClient.post<VO.PageVO<UserService.UserVO>>(
+    '/user/queryAllTenantByPage',
     params,
   );
 }
@@ -58,7 +74,7 @@ async function getUserListPage(params: Recordable<UserService.UserQueryVO>): Pro
  * @param ids 集合
  * @returns 用户列表
  */
-async function getUserListByIds(ids: string[]) {
+async function getUserListByIds(ids: Array<string>) {
   return requestClient.post<Array<UserService.UserVO>>(
     '/user/queryListByIds',
     ids,
@@ -69,10 +85,14 @@ async function getUserListByIds(ids: string[]) {
  * @param ids 集合
  * @returns 用户列表+角色列表
  */
-async function getUserListRolesByIds(ids: string[]) {
+async function getUserListRolesByIds(
+  ids: Array<string>,
+  headers?: Recordable<number | string>,
+) {
   return requestClient.post<Array<UserService.UserVO>>(
     '/user/queryListRolesByIds',
     ids,
+    { headers },
   );
 }
 
@@ -97,7 +117,7 @@ async function getUserRefIdsById(type: string, userId: string) {
 async function saveUserRef(
   type: string,
   userId: string,
-  refIds: Recordable<string>,
+  refIds: Array<string>,
 ) {
   return requestClient.put(`/user/saveRef/${type}/${userId}`, refIds);
 }
@@ -130,6 +150,7 @@ async function deleteUser(id: string) {
 export {
   createUser,
   deleteUser,
+  getUserAllListPage,
   getUserListByIds,
   getUserListPage,
   getUserListRolesByIds,

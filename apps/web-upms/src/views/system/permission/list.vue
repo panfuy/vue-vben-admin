@@ -4,7 +4,7 @@ import type {
   OnActionClickFn,
   OnActionClickParams,
   VxeTableGridColumns,
-  VxeTableGridOptions
+  VxeTableGridOptions,
 } from '#/adapter/vxe-table';
 import type { PermissionService } from '#/api/system/permission';
 
@@ -23,7 +23,6 @@ import Form from './modules/form.vue';
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true, // 关闭时销毁
-  closeOnPressEscape: true, // Esc按钮为关闭事件
 });
 
 function useGridFormSchema(): VbenFormSchema[] {
@@ -41,7 +40,7 @@ function useGridFormSchema(): VbenFormSchema[] {
     {
       component: 'RangePicker',
       fieldName: 'createTime',
-      label: $t('system.permission.field.createTime'),
+      label: $t('system.common.field.createTime'),
     },
   ];
 }
@@ -62,6 +61,7 @@ function useColumns(
       align: 'left',
       field: 'description',
       title: $t('system.permission.field.description'),
+      minWidth: 100,
     },
     {
       align: 'center',
@@ -71,13 +71,23 @@ function useColumns(
       width: 100,
     },
     {
+      field: 'updateBy',
+      title: $t('system.common.field.updateBy'),
+      width: 140,
+    },
+    {
+      field: 'updateTime',
+      title: $t('system.common.field.updateTime'),
+      width: 140,
+    },
+    {
       align: 'right',
       field: 'operation',
       fixed: 'right',
       headerAlign: 'center',
       showOverflow: false,
       title: $t('system.common.columns.operation'),
-      width: 200,
+      width: 'auto',
       cellRender: {
         attrs: {
           nameField: 'name',
@@ -88,7 +98,8 @@ function useColumns(
           {
             code: 'append',
             text: $t('system.common.columns.createSub'),
-            show: (row: PermissionService.PermissionVO) => row.parentId === null
+            show: (row: PermissionService.PermissionVO) =>
+              row.parentId === null,
           },
           'edit', // 默认的编辑按钮
           'delete', // 默认的删除按钮
@@ -140,7 +151,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function onActionClick({ code, row }: OnActionClickParams<PermissionService.PermissionVO>) {
+function onActionClick({
+  code,
+  row,
+}: OnActionClickParams<PermissionService.PermissionVO>) {
   switch (code) {
     case 'append': {
       onAppend(row);
@@ -211,5 +225,4 @@ function onDelete(row: PermissionService.PermissionVO) {
     </Grid>
   </Page>
 </template>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

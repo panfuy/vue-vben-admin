@@ -14,8 +14,18 @@ import { Button, message } from 'ant-design-vue';
 
 import { ModalAsync } from '#/adapter/modal';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getStatus, StatusEnum,StatusOptions } from '#/api/common/enums/status';
-import { deleteUser, getUserListPage, getUserRefIdsById, saveUserRef, updateUser } from '#/api/system/user';
+import {
+  getStatus,
+  StatusEnum,
+  StatusOptions,
+} from '#/api/common/enums/status';
+import {
+  deleteUser,
+  getUserListPage,
+  getUserRefIdsById,
+  saveUserRef,
+  updateUser,
+} from '#/api/system/user';
 import { $t } from '#/locales';
 import { isRecordEdit } from '#/views/system/common';
 import SettingsRole from '#/views/system/role/modules/settings-role.vue';
@@ -29,8 +39,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 });
 const [RoleModal, roleModalApi] = useVbenModal({
   connectedComponent: SettingsRole,
-  destroyOnClose: true,
-  closeOnPressEscape: true,
+  destroyOnClose: true, // 关闭时销毁
 });
 
 function useGridFormSchema(): VbenFormSchema[] {
@@ -56,12 +65,12 @@ function useGridFormSchema(): VbenFormSchema[] {
         options: StatusOptions(),
       },
       fieldName: 'status',
-      label: $t('system.user.field.status'),
+      label: $t('system.common.field.status'),
     },
     {
       component: 'RangePicker',
       fieldName: 'createTime',
-      label: $t('system.user.field.createTime'),
+      label: $t('system.common.field.createTime'),
     },
   ];
 }
@@ -106,24 +115,29 @@ function useColumns(): VxeTableGridColumns {
       width: 200,
     },
     {
-      align: 'left',
-      field: 'description',
-      minWidth: 100,
-      title: $t('system.user.field.remark'),
-    },
-    {
       cellRender: {
         attrs: { beforeChange: onStatusChange, isShow: isRecordEdit },
         name: 'CellSwitch',
       },
       field: 'status',
-      title: $t('system.user.field.status'),
+      title: $t('system.common.field.status'),
       width: 100,
     },
     {
-      field: 'createTime',
-      title: $t('system.user.field.createTime'),
-      width: 200,
+      align: 'left',
+      field: 'remark',
+      minWidth: 100,
+      title: $t('system.common.field.remark'),
+    },
+    {
+      field: 'updateBy',
+      title: $t('system.common.field.updateBy'),
+      width: 140,
+    },
+    {
+      field: 'updateTime',
+      title: $t('system.common.field.updateTime'),
+      width: 140,
     },
     {
       align: 'center',
@@ -146,7 +160,7 @@ function useColumns(): VxeTableGridColumns {
       field: 'operation',
       fixed: 'right',
       title: $t('system.common.columns.operation'),
-      width: 200,
+      width: 'auto',
     },
   ];
 }

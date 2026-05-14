@@ -100,15 +100,21 @@ export namespace MenuService {
 /**
  * 获取菜单数据列表
  */
-async function getMenuList(params: Recordable<MenuService.MenuQueryVO>) {
+async function getMenuList(params: Partial<MenuService.MenuQueryVO>) {
   return requestClient.post<Array<MenuService.MenuVO>>(
     '/menu/queryByPage',
     params,
   );
 }
-
-async function getMenuTreeList() {
-  return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree');
+/**
+ * 获取树表
+ * @param headers 自定义请求头
+ * @returns 树表结果
+ */
+async function getMenuTreeList(headers?: Recordable<number | string>) {
+  return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree', {
+    headers,
+  });
 }
 
 async function isMenuNameExists(name: string, id?: MenuService.MenuVO['id']) {

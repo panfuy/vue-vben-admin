@@ -1,5 +1,8 @@
 import type { Recordable } from '@vben/types';
 
+import type { RoleService } from './role';
+import type { UserService } from './user';
+
 import type { VO } from '#/api/common/vo/base';
 
 import { StatusEnum } from '#/api/common/enums/status';
@@ -22,32 +25,46 @@ export namespace TenantService {
     source?: string;
     status: StatusEnum;
   }
+  /**
+   * 租户引用用户角色 VO
+   */
+  export interface TenantRefUserRoleVO {
+    userVO: Partial<UserService.UserVO>;
+    roleVO: Partial<RoleService.RoleVO>;
+  }
 }
 
 /**
  * 根据角色 ID 获取引用 ID 列表
  * @param type 引用类型（如：菜单、权限等）
- * @param roleId 角色 ID
+ * @param tenantId 租户 ID
  * @returns 引用ID列表
  */
-async function getTenantRefIdsById(type: string, roleId: string) {
+async function getTenantRefIdsById(type: string, tenantId: string) {
   return requestClient.get<Array<string>>(
-    `/tenant/getRefIdsById/${type}/${roleId}`,
+    `/tenant/getRefIdsById/${type}/${tenantId}`,
   );
 }
 
 /**
- * 根据角色 ID 保存引用 ID 列表
- * @param type 引用类型（如：菜单、权限等）
- * @param roleId 角色 ID
+ * 根据角色 ID 保存用户角色引用 ID 列表
+ * @param tenantId 租户 ID
+ * @param refList 引用对象列表
+ */
+async function saveTenantRefUserRole(
+  tenantId: string,
+  refList: Array<TenantService.TenantRefUserRoleVO>,
+) {
+  return requestClient.put(`/tenant/saveRef/USER_ROLE/${tenantId}`, refList);
+}
+
+/**
+ * 根据角色 ID 保存菜单引用 ID 列表
+ * @param tenantId 租户 ID
  * @param refIds 引用ID列表
  */
-async function saveTenantRef(
-  type: string,
-  roleId: string,
-  refIds: Recordable<string>,
-) {
-  return requestClient.put(`/tenant/saveRef/${type}/${roleId}`, refIds);
+async function saveTenantRefMenu(tenantId: string, refIds: Array<string>) {
+  return requestClient.put(`/tenant/saveRef/MENU/${tenantId}`, refIds);
 }
 
 /**
@@ -82,7 +99,7 @@ async function isTenantNameExists(
 async function getTenantListPage(
   params: Recordable<TenantService.TenantQueryVO>,
 ) {
-  return requestClient.post<Array<TenantService.TenantVO>>(
+  return requestClient.post<Partial<TenantService.TenantVO>>(
     '/tenant/queryByPage',
     params,
   );
@@ -120,6 +137,7 @@ export {
   getTenantRefIdsById,
   isTenantIdExists,
   isTenantNameExists,
-  saveTenantRef,
+  saveTenantRefMenu,
+  saveTenantRefUserRole,
   updateTenant,
 };
