@@ -13,6 +13,15 @@ export namespace VO {
   }
 
   /**
+   * 批量操作对象
+   */
+  export interface BatchVO<T = any> {
+    creates: Array<T>;
+    updates: Array<T>;
+    deletes: Array<T>;
+  }
+
+  /**
    * 请求头的key值
    */
   export const tenantHeaderKey = 'x-tenant-id';

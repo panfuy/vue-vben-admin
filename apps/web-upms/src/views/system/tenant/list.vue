@@ -19,6 +19,7 @@ import {
   StatusEnum,
   StatusOptions,
 } from '#/api/common/enums/status';
+import { VO } from '#/api/common/vo/base';
 import {
   deleteTenant,
   getTenantListPage,
@@ -28,7 +29,7 @@ import {
   updateTenant,
 } from '#/api/system/tenant';
 import { $t } from '#/locales';
-import { isRecordEdit } from '#/views/system/common';
+import { isRecordEdit, Item } from '#/views/system/common';
 import SettingsMenu from '#/views/system/menu/modules/settings-menu.vue';
 import SettingsUserRole from '#/views/system/user/modules/settings-user-role.vue';
 
@@ -235,14 +236,33 @@ function onSaveRefMenu(tenantId: any, data: any) {
 }
 
 function onSaveRefUserRole(tenantId: any, data: any) {
+  const { creates, updates, deletes } = data.batchVO;
+  const params: VO.BatchVO<TenantService.TenantRefUserRoleVO> = {
+    creates: convertRefVO(creates),
+    updates: convertRefVO(updates),
+    deletes: convertRefVO(deletes),
+  };
+  // 处理更新
+  saveTenantRefUserRole(tenantId, params);
+}
+
+function convertRefVO(
+  list: Array<Item.User>,
+): Array<TenantService.TenantRefUserRoleVO> {
   // 封装返回对象封装成[{userVO, roleVO}]格式
   const params: Array<TenantService.TenantRefUserRoleVO> = [];
-  data?.userRolesList?.forEach((item: any) => {
-    item?.roleIds?.forEach((roleId: string) => {
-      params.push({ userVO: { id: item.userId }, roleVO: { id: roleId } });
+  (list || []).forEach((user: Item.User) => {
+    if (!user.roles || user.roles.length === 0) {
+      // 没有角色时，添加user对象
+      params.push({ userVO: { id: user.id } });
+      return;
+    }
+    // 有角色时，添加user对象和role对象
+    user.roles.forEach((role: Item.Role) => {
+      params.push({ userVO: { id: user.id }, roleVO: { id: role.id } });
     });
   });
-  saveTenantRefUserRole(tenantId, params);
+  return params;
 }
 
 /**

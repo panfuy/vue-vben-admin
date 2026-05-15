@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { RoleService } from '#/api/system/role';
 import type { UserService } from '#/api/system/user';
-import type { Item } from '#/views/system/common';
 
 import { computed, ref, watch } from 'vue';
 
@@ -27,7 +26,7 @@ import {
   getUserListPage,
   getUserListRolesByIds,
 } from '#/api/system/user';
-import { convertRoleItem, convertUserItem } from '#/views/system/common';
+import { convertRoleItem, convertUserItem, Item } from '#/views/system/common';
 
 // 响应的事件
 const emits = defineEmits(['success']);
@@ -52,23 +51,54 @@ const roleListData = ref<Item.Role[]>([]);
 const roleSearchText = ref('');
 const roleSearchData = ref<Item.Role[]>([]);
 
+function buildBatchVO(): VO.BatchVO<Item.User> {
+  const creates: Item.User[] = [];
+  const updates: Item.User[] = [];
+  const deletes: Item.User[] = [];
+
+  for (const user of leftDataSelected.value) {
+    // 规则1：用户本身有 create 或 delete 动作，直接归入对应数组
+    if (user.action === Item.ActionType.CREATE) {
+      user.roles = getUserRoles(user.roles);
+      creates.push(user);
+      continue;
+    }
+    if (user.action === Item.ActionType.DELETE) {
+      user.roles = [];
+      deletes.push(user);
+      continue;
+    }
+    // 规则2：用户下角色有变化的（action不为空）标识有更新
+    const changedRoles = user.roles?.filter((r) => r.id && r.action);
+    if (changedRoles && changedRoles.length > 0) {
+      // 产生一条 update 记录，携带非删除状态的角色
+      updates.push({
+        ...user,
+        action: Item.ActionType.UPDATE,
+        roles: getUserRoles(user.roles),
+      });
+    }
+    // 其它为未改动，直接跳过
+  }
+  return { creates, updates, deletes };
+}
+
 const [Modal, modalApi] = useVbenModal({
   class: 'w-[900px] max-w-[90vw]',
   async onConfirm() {
-    // 构建返回数据：每个用户及其对应的角色列表
-    const userRolesList = leftDataSelected.value.map((user) => ({
-      userId: user.id,
-      roleIds: user.roles?.filter((r) => r.id).map((r) => r.id) || [], // 过滤掉未选择的角色（roleId为空的项）
-    }));
     modalApi.lock();
+    const isAndEmptyRoles = getUsers().some(
+      (u) => getUserRoles(u.roles).length === 0,
+    );
     // 若是用户对应的角色ids为空，弹出提示阻止提交
-    if (userRolesList.some((item) => item.roleIds.length === 0)) {
+    if (isAndEmptyRoles) {
       message.error(`${$t('system.user.message.noselectRoles')}`);
       modalApi.unlock();
       return;
     }
     // 回传提交数据
-    emits('success', handerId.value, { userRolesList }, switchTenantId.value);
+    const batchVO = buildBatchVO();
+    emits('success', handerId.value, { batchVO }, switchTenantId.value);
     modalApi.close();
   },
 
@@ -179,7 +209,7 @@ function handleSelect(id: string) {
     if (item) {
       leftDataSelected.value = [
         ...leftDataSelected.value,
-        { ...item, roles: [] },
+        { ...item, roles: [], action: Item.ActionType.CREATE },
       ];
       handleUserClick(id);
     }
@@ -191,20 +221,20 @@ function handleRemove(id: string) {
   if (currentUserId.value === id) {
     currentUserId.value = '';
   }
-  // 找到被删除元素在原数组中的索引
-  const currentIndex = leftDataSelected.value.findIndex((u) => u.id === id);
   // 筛选出所有不满足条件的元素，生成新数组
-  const newSelectedData = leftDataSelected.value.filter((u) => u.id !== id);
-  leftDataSelected.value = newSelectedData;
-  // 删除后选中当前ID的上一个元素（索引-1位置的元素）
-  if (newSelectedData.length > 0) {
-    const prevIndex = currentIndex - 1;
-    if (prevIndex >= 0 && newSelectedData[prevIndex]) {
-      handleUserClick(newSelectedData[prevIndex].id);
-    } else if (newSelectedData[0]) {
-      // 如果没有上一个元素，选中第一个
-      handleUserClick(newSelectedData[0].id);
-    }
+  const newSelectedData = leftDataSelected.value;
+  newSelectedData
+    .filter((u) => u.id === id)
+    .forEach((u) => {
+      u.action = Item.ActionType.DELETE;
+    });
+  const noDeleteData = getUsers();
+  if (noDeleteData && noDeleteData[0]) {
+    // 删除后选中第一个用户
+    handleUserClick(noDeleteData[0].id);
+  } else {
+    // 没有用户列表时，清空选中状态
+    currentUserId.value = '';
   }
 }
 
@@ -213,7 +243,7 @@ const isSelected = (id: string) => {
   if (!id || leftDataSelected.value.length === 0) {
     return false;
   }
-  return leftDataSelected.value.some((u) => u.id === id);
+  return getUsers().some((u) => u.id === id);
 };
 
 // 点击用户行选中用户
@@ -222,8 +252,10 @@ async function handleUserClick(id: string) {
     return;
   }
   currentUserId.value = id;
-  // 加载角色列表（动态加载）
-  await loadRoleListData();
+  if (id) {
+    // 加载角色列表（动态加载）
+    await loadRoleListData();
+  }
 }
 
 // 判断用户是否当前选中
@@ -233,8 +265,8 @@ const isCurrentSelected = (id: string) => {
 
 // 获取当前选中用户的角色列表
 const getCurrentUserRoles = () => {
-  const user = leftDataSelected.value.find((u) => u.id === currentUserId.value);
-  return user?.roles || [];
+  const user = getUsers().find((u) => u.id === currentUserId.value);
+  return getUserRolesAndEmpty(user?.roles);
 };
 
 // 添加角色
@@ -244,7 +276,12 @@ async function handleAddRole() {
     if (!user.roles) {
       user.roles = [];
     }
-    user.roles.push({ id: '', title: '', description: '' });
+    user.roles.push({
+      id: '',
+      title: '',
+      description: '',
+      action: Item.ActionType.CREATE,
+    });
     // 重置角色列表（动态加载）
     await loadRoleListData();
   }
@@ -253,8 +290,17 @@ async function handleAddRole() {
 // 移除角色
 function handleRemoveRole(index: number) {
   const user = leftDataSelected.value.find((u) => u.id === currentUserId.value);
-  if (user?.roles) {
-    user.roles.splice(index, 1);
+  const role =
+    user?.roles && user?.roles.length - 1 >= index
+      ? user?.roles[index]
+      : undefined;
+  if (!role?.id) {
+    // id为空的直接删除
+    user?.roles?.splice(index, 1);
+    return;
+  }
+  if (role) {
+    role.action = Item.ActionType.DELETE;
   }
 }
 
@@ -281,6 +327,7 @@ function handleRoleChange(roleId: string | undefined, index: number) {
       id: role.id,
       title: role.title,
       description: role.description,
+      action: Item.ActionType.CREATE,
     };
   }
 }
@@ -293,16 +340,13 @@ const availableRoleOptions = computed(() => {
     (u) => u.id === currentUserId.value,
   );
   const userRoles = currentUser?.roles || [];
-
   // 已选中的角色ID集合（排除当前正在编辑的项）
-  const selectedRoleIds = new Set(
-    userRoles.filter((r) => r.id).map((r) => r.id),
-  );
+  const selectedRoleIds = new Set(getUserRoles(userRoles).map((r) => r.id));
 
   // 合并可选角色列表和用户已选择的角色，确保已选中的角色能显示
   const roleIds = new Set(getRoleListData().map((r) => r.id));
-  const selectedRolesNotInList = userRoles.filter(
-    (r) => r.id && !roleIds.has(r.id),
+  const selectedRolesNotInList = getUserRoles(userRoles).filter(
+    (r) => !roleIds.has(r.id),
   );
   const allRoles = [...getRoleListData(), ...selectedRolesNotInList];
 
@@ -318,8 +362,23 @@ function handlerRoleFocus() {
   roleSearchText.value = '';
 }
 
-function getRoleCount(roles?: Item.Role[]) {
-  return roles?.filter((r) => r.id).length || 0;
+/**
+ * 获取用户下的角色集合
+ * @param roles 待判断的对象
+ * @returns 角色集合
+ */
+function getUserRoles(roles?: Item.Role[]) {
+  return getUserRolesAndEmpty(roles).filter((r) => r.id) || [];
+}
+function getUserRolesAndEmpty(roles?: Item.Role[]) {
+  return roles?.filter((r) => r.action !== Item.ActionType.DELETE) || [];
+}
+
+function getUsers() {
+  return (
+    leftDataSelected.value.filter((r) => r.action !== Item.ActionType.DELETE) ||
+    []
+  );
 }
 
 // 当前用户是否可以编辑角色
@@ -390,12 +449,12 @@ const canEditRole = computed(() => {
       <div class="selected-panel">
         <div class="panel-header">
           <span>{{ $t('system.user.settings.selected') }}</span>
-          <span class="panel-count">{{ leftDataSelected.length }}</span>
+          <span class="panel-count">{{ getUsers().length }}</span>
         </div>
         <div class="panel-content">
           <List
-            v-if="leftDataSelected.length > 0"
-            :data-source="leftDataSelected"
+            v-if="getUsers().length > 0"
+            :data-source="getUsers()"
             size="small"
           >
             <template #renderItem="{ item }">
@@ -409,10 +468,14 @@ const canEditRole = computed(() => {
                   <div class="item-sub-title">{{ item.phone }}</div>
                   <div class="item-sub-title">{{ item.email }}</div>
                 </div>
-                <Tag :color="getRoleCount(item.roles) > 0 ? 'blue' : '#ff3860'">
-{{ getRoleCount(item.roles) }}
-                  {{ $t('system.user.settings.roleTitle') }}
-</Tag>
+                <Tag
+                  :color="
+                    getUserRoles(item.roles).length > 0 ? 'blue' : '#ff3860'
+                  "
+                >
+                  {{ getUserRoles(item.roles).length
+                  }}{{ $t('system.user.settings.roleTitle') }}
+                </Tag>
                 <Button
                   type="link"
                   danger

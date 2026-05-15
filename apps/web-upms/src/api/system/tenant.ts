@@ -29,8 +29,8 @@ export namespace TenantService {
    * 租户引用用户角色 VO
    */
   export interface TenantRefUserRoleVO {
-    userVO: Partial<UserService.UserVO>;
-    roleVO: Partial<RoleService.RoleVO>;
+    userVO?: Partial<UserService.UserVO>;
+    roleVO?: Partial<RoleService.RoleVO>;
   }
 }
 
@@ -49,13 +49,13 @@ async function getTenantRefIdsById(type: string, tenantId: string) {
 /**
  * 根据角色 ID 保存用户角色引用 ID 列表
  * @param tenantId 租户 ID
- * @param refList 引用对象列表
+ * @param batchVO 引用对象批量处理对象
  */
 async function saveTenantRefUserRole(
   tenantId: string,
-  refList: Array<TenantService.TenantRefUserRoleVO>,
+  batchVO: VO.BatchVO<TenantService.TenantRefUserRoleVO>,
 ) {
-  return requestClient.put(`/tenant/saveRef/USER_ROLE/${tenantId}`, refList);
+  return requestClient.put(`/tenant/saveRef/USER_ROLE/${tenantId}`, batchVO);
 }
 
 /**

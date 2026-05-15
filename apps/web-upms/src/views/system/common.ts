@@ -1,7 +1,7 @@
 import type { RoleService } from '#/api/system/role';
 import type { UserService } from '#/api/system/user';
 
-export type {RoleService, UserService};
+export type { RoleService, UserService };
 
 /**
  * 页面展示内容项对象
@@ -16,6 +16,10 @@ export namespace Item {
     email: string;
     phone: string;
     roles?: Role[];
+    /**
+     * 标识：新增、修改、删除
+     */
+    action?: ActionType;
   }
 
   /**
@@ -25,6 +29,19 @@ export namespace Item {
     id: string;
     title: string;
     description: string;
+    /**
+     * 标识：新增、修改、删除
+     */
+    action?: ActionType;
+  }
+
+  /**
+   * 操作类型
+   */
+  export enum ActionType {
+    CREATE = 'create',
+    DELETE = 'delete',
+    UPDATE = 'update',
   }
 }
 
