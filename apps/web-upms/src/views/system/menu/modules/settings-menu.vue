@@ -43,6 +43,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const values = await formApi.getValues();
     drawerApi.lock();
+
     emits('success', handerId.value, values, switchTenantId.value);
     drawerApi.close();
   },

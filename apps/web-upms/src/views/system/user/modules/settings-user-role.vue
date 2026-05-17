@@ -2,7 +2,7 @@
 import type { RoleService } from '#/api/system/role';
 import type { UserService } from '#/api/system/user';
 
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -119,7 +119,11 @@ const [Modal, modalApi] = useVbenModal({
         leftDataSelected.value = [];
       }
       currentUserId.value = '';
-      await loadLeftData();
+      await nextTick();
+
+      if (data) {
+        await loadLeftData();
+      }
     }
   },
 });
