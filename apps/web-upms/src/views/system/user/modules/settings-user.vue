@@ -9,6 +9,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Button, Input, List, Pagination, Spin } from 'ant-design-vue';
 
+import { StatusEnum } from '#/api/common/enums/status';
 import { getUserListByIds, getUserListPage } from '#/api/system/user';
 import { convertUserItem } from '#/views/system/common';
 
@@ -64,6 +65,7 @@ async function loadLeftData() {
   try {
     const res = (await getUserListPage({
       condition: leftSearchText.value || undefined,
+      status: StatusEnum.ENABLED,
       current: leftPagination.value.current,
       pageSize: leftPagination.value.pageSize,
     } as any)) as VO.PageVO<UserService.UserVO>;

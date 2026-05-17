@@ -1,4 +1,3 @@
-import type { Recordable } from '@vben/types';
 
 import type { VO } from '#/api/common/vo/base';
 
@@ -65,12 +64,10 @@ async function isRoleCodeExists(code: string) {
  */
 async function getRoleListPage(
   params: Partial<RoleService.RoleQueryVO>,
-  headers?: Recordable<number | string>,
 ): Promise<VO.PageVO<RoleService.RoleVO>> {
   return requestClient.post<VO.PageVO<RoleService.RoleVO>>(
     '/role/queryByPage',
     params,
-    { headers },
   );
 }
 /**

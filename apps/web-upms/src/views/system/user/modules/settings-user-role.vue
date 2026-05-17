@@ -19,6 +19,7 @@ import {
   Tag,
 } from 'ant-design-vue';
 
+import { StatusEnum } from '#/api/common/enums/status';
 import { VO } from '#/api/common/vo/base';
 import { getRoleListPage } from '#/api/system/role';
 import {
@@ -148,6 +149,7 @@ async function loadLeftData() {
       switchTenantId.value ? getUserAllListPage : getUserListPage
     )({
       condition: leftSearchText.value || undefined,
+      status: StatusEnum.ENABLED,
       current: leftPagination.value.current,
       pageSize: leftPagination.value.pageSize,
     } as any)) as VO.PageVO<UserService.UserVO>;
@@ -167,8 +169,7 @@ async function loadRoleListData(searchText?: string) {
         current: 1,
         pageSize: 100,
         condition: searchText || undefined,
-      },
-      VO.createTenantHeader(switchTenantId.value),
+      }
     )) as VO.PageVO<RoleService.RoleVO>;
     (isRoleSearchNotEmpty() ? roleSearchData : roleListData).value =
       convertRoleItem(res?.records || []);

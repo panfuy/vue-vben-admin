@@ -36,11 +36,11 @@ export namespace UserService {
  * @param id 用户 ID
  * @returns 是否存在
  */
-async function isUserExists(id: string) {
-  return requestClient.get<boolean>('/user/checkExists', {
-    params: { id },
-  });
-}
+// async function isUserExists(id: string) {
+//   return requestClient.get<boolean>('/user/checkExists', {
+//     params: { id },
+//   });
+// }
 
 /**
  * 查询用户列表
@@ -65,7 +65,7 @@ async function getUserAllListPage(
   params: Partial<UserService.UserQueryVO>,
 ): Promise<VO.PageVO<UserService.UserVO>> {
   return requestClient.post<VO.PageVO<UserService.UserVO>>(
-    '/user/queryAllTenantByPage',
+    '/user/base/queryByPage',
     params,
   );
 }
@@ -76,7 +76,7 @@ async function getUserAllListPage(
  */
 async function getUserListByIds(ids: Array<string>) {
   return requestClient.post<Array<UserService.UserVO>>(
-    '/user/queryListByIds',
+    '/user/base/queryListByIds',
     ids,
   );
 }
@@ -136,7 +136,7 @@ async function createUser(data: Partial<UserService.UserVO>) {
  * @param data 用户数据
  */
 async function updateUser(data: Partial<UserService.UserVO>) {
-  return requestClient.put('/user/update', data);
+  return requestClient.put('/user/base/update', data);
 }
 
 /**
@@ -155,7 +155,7 @@ export {
   getUserListPage,
   getUserListRolesByIds,
   getUserRefIdsById,
-  isUserExists,
+  // isUserExists,
   saveUserRef,
   updateUser,
 };

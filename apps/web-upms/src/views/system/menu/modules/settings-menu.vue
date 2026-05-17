@@ -11,15 +11,12 @@ import { IconifyIcon } from '@vben/icons';
 import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { VO } from '#/api/common/vo/base';
 import { getMenuTreeList } from '#/api/system/menu';
 import { $t } from '#/locales';
 
 import { MenuTypeEnum } from '../common';
 
 const emits = defineEmits(['success']);
-// 切换租户ID，为空时表示不要切换
-const switchTenantId = ref<string>('');
 const formData = ref<any>();
 
 const [Form, formApi] = useVbenForm({
@@ -44,7 +41,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
 
-    emits('success', handerId.value, values, switchTenantId.value);
+    emits('success', handerId.value, values);
     drawerApi.close();
   },
 
@@ -55,10 +52,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data) {
         formData.value = data;
         handerId.value = data.id;
-        switchTenantId.value = data.switchTenantId;
       } else {
         handerId.value = '';
-        switchTenantId.value = '';
       }
 
       if (menuTreeData.value.length === 0) {
@@ -76,9 +71,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 async function loadData() {
   menuLoadingShow.value = true;
   try {
-    const res = await getMenuTreeList(
-      VO.createTenantHeader(switchTenantId.value),
-    );
+    const res = await getMenuTreeList();
     menuTreeData.value = res as unknown as DataNode[];
   } finally {
     menuLoadingShow.value = false;

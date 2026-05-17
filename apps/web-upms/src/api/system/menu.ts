@@ -108,13 +108,10 @@ async function getMenuList(params: Partial<MenuService.MenuQueryVO>) {
 }
 /**
  * 获取树表
- * @param headers 自定义请求头
  * @returns 树表结果
  */
-async function getMenuTreeList(headers?: Recordable<number | string>) {
-  return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree', {
-    headers,
-  });
+async function getMenuTreeList() {
+  return requestClient.get<Array<MenuService.MenuVO>>('/menu/tree');
 }
 
 async function isMenuNameExists(name: string, id?: MenuService.MenuVO['id']) {

@@ -208,18 +208,14 @@ function onActionClick(e: OnActionClickParams<TenantService.TenantVO>) {
     case 'menu': {
       // 查询此角色拥有的菜单ID
       getTenantRefIdsById('MENU', e.row.id).then((menuIds) => {
-        menuDrawerApi
-          .setData({ ...e.row, menuIds, switchTenantId: e.row.id })
-          .open();
+        menuDrawerApi.setData({ ...e.row, menuIds, switchTenantId: e.row.id }).open();
       });
       break;
     }
     case 'user': {
       // 查询此角色拥有的管理员ID
       getTenantRefIdsById('USER', e.row.id).then((userIds) => {
-        userRoleModalApi
-          .setData({ ...e.row, userIds, switchTenantId: e.row.id })
-          .open();
+        userRoleModalApi.setData({ ...e.row, userIds, switchTenantId: e.row.id }).open();
       });
       break;
     }
