@@ -70,7 +70,9 @@ let lastTreeData: any = null;
 onMounted(() => {
   watchEffect(() => {
     flattenData.value = flatten(props.treeData, props.childrenField);
-    updateTreeValue();
+    if (flattenData.value.length > 0) {
+      updateTreeValue();
+    }
 
     // 只在 treeData 变化时执行展开
     const currentTreeData = JSON.stringify(props.treeData);
@@ -399,7 +401,7 @@ defineExpose({
         "
         class="tree-node focus:ring-grass8 my-0.5 flex items-center rounded p-1 outline-hidden"
       >
-      <!-- class="hover:ring-2" 鼠标移动上去时2px的圆环边框 -->
+        <!-- class="hover:ring-2" 鼠标移动上去时2px的圆环边框 -->
         <ChevronRight
           v-if="
             item.hasChildren &&
@@ -485,16 +487,16 @@ defineExpose({
   border: 1px solid #666;
 }
 
-.item-checkbox{
+.item-checkbox {
   width: 100%;
   overflow: hidden;
 }
 
-.item-all-checkbox{
+.item-all-checkbox {
   width: 100%;
   overflow: hidden;
 
-  .text-label{
+  .text-label {
     margin-left: 8px;
   }
 }
