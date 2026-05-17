@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VO } from '#/api/common/vo/base';
 import type { UserService } from '#/api/system/user';
-import type {Item} from '#/views/system/common';
+import type { Item } from '#/views/system/common';
 
 import { ref, watch } from 'vue';
 
@@ -12,7 +12,6 @@ import { Button, Input, List, Pagination, Spin } from 'ant-design-vue';
 import { StatusEnum } from '#/api/common/enums/status';
 import { getUserListByIds, getUserListPage } from '#/api/system/user';
 import { convertUserItem } from '#/views/system/common';
-
 
 // 响应的事件
 const emits = defineEmits(['success']);
@@ -75,7 +74,6 @@ async function loadLeftData() {
     loading.value = false;
   }
 }
-
 
 // 左侧搜索防抖定时器
 let leftSearchTimer: null | ReturnType<typeof setTimeout> = null;
@@ -193,7 +191,7 @@ const isSelected = (id: string) => {
               <List.Item class="item-list">
                 <div class="item-info">
                   <div class="item-title">{{ item.title }}</div>
-                    <div class="item-sub-title">{{ item.phone }}</div>
+                  <div class="item-sub-title">{{ item.phone }}</div>
                   <div class="item-sub-title">{{ item.email }}</div>
                 </div>
                 <Button

@@ -164,13 +164,11 @@ async function loadLeftData() {
 async function loadRoleListData(searchText?: string) {
   roleLoading.value = true;
   try {
-    const res = (await getRoleListPage(
-      {
-        current: 1,
-        pageSize: 100,
-        condition: searchText || undefined,
-      }
-    )) as VO.PageVO<RoleService.RoleVO>;
+    const res = (await getRoleListPage({
+      current: 1,
+      pageSize: 100,
+      condition: searchText || undefined,
+    })) as VO.PageVO<RoleService.RoleVO>;
     (isRoleSearchNotEmpty() ? roleSearchData : roleListData).value =
       convertRoleItem(res?.records || []);
   } finally {
