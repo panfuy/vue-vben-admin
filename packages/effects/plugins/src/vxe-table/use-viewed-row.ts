@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* eslint-disable unicorn/no-nested-ternary */
+>>>>>>> vben/main
 import type { VxeGridProps as VxeTableGridProps } from 'vxe-table';
 
 import type {
@@ -183,9 +187,15 @@ export function useViewedRow<T = any>(
 ) {
   // ========== 解析持久化配置 ==========
   const persistOpts: null | ViewedRowPersistOptions = options.persist
+<<<<<<< HEAD
     ? (typeof options.persist === 'string'
       ? { key: options.persist, type: 'localStorage' }
       : options.persist)
+=======
+    ? typeof options.persist === 'string'
+      ? { key: options.persist, type: 'localStorage' }
+      : options.persist
+>>>>>>> vben/main
     : null;
 
   const adapter = createStorageAdapter(options.persist);
@@ -521,9 +531,9 @@ export function applyViewedRowOptions(
   // 拦截 CellOperation columns
   const actionCodes =
     !isBoolean(viewedRowConfig) && viewedRowConfig.actionCodes
-      ? (Array.isArray(viewedRowConfig.actionCodes)
+      ? Array.isArray(viewedRowConfig.actionCodes)
         ? viewedRowConfig.actionCodes
-        : [viewedRowConfig.actionCodes])
+        : [viewedRowConfig.actionCodes]
       : [];
 
   if (actionCodes.length > 0 && Array.isArray(mergedOptions.columns)) {

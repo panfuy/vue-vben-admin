@@ -6,7 +6,11 @@ import { ref } from 'vue';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
+<<<<<<< HEAD
 import { Button, message } from 'ant-design-vue';
+=======
+import { Button, message } from 'antdv-next';
+>>>>>>> vben/main
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getExampleTableApi } from '#/api';
