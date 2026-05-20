@@ -184,15 +184,9 @@ export function useViewedRow<T = any>(
 ) {
   // ========== 解析持久化配置 ==========
   const persistOpts: null | ViewedRowPersistOptions = options.persist
-<<<<<<< HEAD
-    ? (typeof options.persist === 'string'
-      ? { key: options.persist, type: 'localStorage' }
-      : options.persist)
-=======
     ? typeof options.persist === 'string'
       ? { key: options.persist, type: 'localStorage' }
       : options.persist
->>>>>>> vben/main
     : null;
 
   const adapter = createStorageAdapter(options.persist);
