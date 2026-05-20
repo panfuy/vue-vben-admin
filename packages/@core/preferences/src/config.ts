@@ -31,6 +31,7 @@ const defaultPreferences: Preferences = {
     id: 'cn.vben.admin',
     name: 'Vben Admin',
     preferencesButtonPosition: 'auto',
+    timezone: 'Asia/Shanghai',
     watermark: false,
     watermarkContent: '',
     zIndex: 200,
