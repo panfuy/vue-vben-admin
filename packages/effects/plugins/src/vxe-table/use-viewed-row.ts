@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* eslint-disable unicorn/no-nested-ternary */
->>>>>>> vben/main
 import type { VxeGridProps as VxeTableGridProps } from 'vxe-table';
 
 import type {
