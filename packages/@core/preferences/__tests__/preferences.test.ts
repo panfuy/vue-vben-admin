@@ -65,6 +65,8 @@ describe('preferences', () => {
     const overrides: any = {
       app: {
         locale: 'en-US',
+        id: 'app.id',
+        name: 'New App Name',
       },
     };
     await preferenceManager.initPreferences({
@@ -224,7 +226,10 @@ describe('preferences', () => {
 
   it('merges nested preference objects correctly', () => {
     preferenceManager.updatePreferences({
-      app: { name: 'New App Name' },
+      app: {
+        id: 'app.id',
+        name: 'New App Name',
+      },
     });
 
     const expected = {
@@ -243,6 +248,8 @@ describe('preferences', () => {
     const overrides: any = {
       app: {
         locale: 'en-US',
+        id: 'app.id',
+        name: 'New App Name',
       },
     };
 
@@ -284,6 +291,12 @@ describe('preferences', () => {
 
     await preferenceManager.initPreferences({
       extension,
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       namespace: 'custom-defaults',
     });
 
@@ -315,6 +328,12 @@ describe('preferences', () => {
 
     await preferenceManager.initPreferences({
       extension,
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       namespace: 'custom-readonly',
     });
 
@@ -348,6 +367,12 @@ describe('preferences', () => {
 
   it('updates and resets custom preferences correctly', async () => {
     await preferenceManager.initPreferences({
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       extension: {
         fields: [
           {
@@ -388,6 +413,12 @@ describe('preferences', () => {
 
   it('ignores invalid custom preferences updates', async () => {
     await preferenceManager.initPreferences({
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       extension: {
         fields: [
           {
@@ -427,6 +458,12 @@ describe('preferences', () => {
 
   it('enforces custom number field min max and step constraints', async () => {
     await preferenceManager.initPreferences({
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       extension: {
         fields: [
           {
@@ -493,6 +530,12 @@ describe('preferences', () => {
     });
 
     await preferenceManager.initPreferences({
+      overrides: {
+        app: {
+          id: 'app.id',
+          name: 'New App Name',
+        },
+      },
       extension: {
         fields: [
           {

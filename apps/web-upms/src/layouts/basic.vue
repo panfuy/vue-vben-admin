@@ -250,8 +250,8 @@ onBeforeMount(() => {
         <LoginForm />
       </AuthenticationLoginExpiredModal>
     </template>
-    <template #header-right-150>
+    <!-- <template #header-right-150>
       <span>SS</span>
-    </template>
+    </template> -->
   </BasicLayout>
 </template>

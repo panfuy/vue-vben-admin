@@ -28,7 +28,7 @@ const defaultPreferences: Preferences = {
     layout: 'sidebar-nav',
     locale: 'zh-CN',
     loginExpiredMode: 'page',
-    id: 'cn.vben.admin',
+    id: 'cn.vben',
     name: 'Vben Admin',
     preferencesButtonPosition: 'auto',
     timezone: 'Asia/Shanghai',
