@@ -27,6 +27,13 @@ export const overridesPreferences = defineOverridesPreferences({
   app: {
     id: import.meta.env.VITE_APP_ID,
     name: import.meta.env.VITE_APP_TITLE,
+    preferencesButtonPosition: 'user-dropdown',
+  },
+  copyright: {
+    settingShow: false,
+    companyName: 'Jalos.cn',
+    companySiteLink: 'https://www.jalos.cn',
+    date: '2026',
   },
 });
 

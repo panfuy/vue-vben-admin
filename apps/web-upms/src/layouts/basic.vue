@@ -8,12 +8,7 @@ import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
 import { useWatermark } from '@vben/hooks';
 import { BookOpenText, CircleHelp, SvgGithubIcon } from '@vben/icons';
-import {
-  BasicLayout,
-  LockScreen,
-  Notification,
-  UserDropdown,
-} from '@vben/layouts';
+import { BasicLayout, Notification, UserDropdown } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useTabbarStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
@@ -232,6 +227,7 @@ onBeforeMount(() => {
         tag-text="Pro"
         trigger="both"
         @logout="handleLogout"
+        @clear-preferences-and-logout="handleLogout"
       />
     </template>
     <template #notification>
@@ -254,8 +250,8 @@ onBeforeMount(() => {
         <LoginForm />
       </AuthenticationLoginExpiredModal>
     </template>
-    <template #lock-screen>
-      <LockScreen :avatar @to-login="handleLogout" />
+    <template #header-right-150>
+      <span>SS</span>
     </template>
   </BasicLayout>
 </template>

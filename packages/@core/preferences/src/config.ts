@@ -85,7 +85,7 @@ const defaultPreferences: Preferences = {
   },
   sidebar: {
     autoActivateChild: false,
-    collapsed: false,
+    collapsed: true,
     collapsedButton: true,
     collapsedShowTitle: false,
     collapseWidth: 60,
@@ -121,7 +121,7 @@ const defaultPreferences: Preferences = {
     colorPrimary: 'hsl(212 100% 45%)',
     colorSuccess: 'hsl(144 57% 58%)',
     colorWarning: 'hsl(42 84% 61%)',
-    mode: 'dark',
+    mode: 'auto',
     radius: '0.5',
     fontSize: 16,
     semiDarkHeader: false,
