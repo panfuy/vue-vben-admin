@@ -85,7 +85,7 @@ exports[`defaultPreferences immutability test > should not modify the config obj
   "sidebar": {
     "autoActivateChild": false,
     "collapseWidth": 60,
-    "collapsed": false,
+    "collapsed": true,
     "collapsedButton": true,
     "collapsedShowTitle": false,
     "draggable": true,
@@ -121,7 +121,7 @@ exports[`defaultPreferences immutability test > should not modify the config obj
     "colorSuccess": "hsl(144 57% 58%)",
     "colorWarning": "hsl(42 84% 61%)",
     "fontSize": 16,
-    "mode": "dark",
+    "mode": "auto",
     "radius": "0.5",
     "semiDarkHeader": false,
     "semiDarkSidebar": false,
