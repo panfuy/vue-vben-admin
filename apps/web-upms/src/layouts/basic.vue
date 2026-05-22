@@ -5,16 +5,18 @@ import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
-import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
-import { useWatermark } from '@vben/hooks';
-import { BookOpenText, CircleHelp, SvgGithubIcon } from '@vben/icons';
+import { useRefresh, useWatermark } from '@vben/hooks';
+import { BookOpenText } from '@vben/icons';
 import { BasicLayout, Notification, UserDropdown } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useTabbarStore, useUserStore } from '@vben/stores';
-import { openWindow } from '@vben/utils';
+
+import {
+  Select,
+} from '@vben-core/shadcn-ui';
 
 import { $t } from '#/locales';
-import { useAuthStore } from '#/store';
+import { useAuthStore, useTenantStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const { setMenuList } = useTabbarStore();
@@ -87,6 +89,8 @@ const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
+const tenantStore = useTenantStore();
+const { refresh } = useRefresh();
 const { destroyWatermark, updateWatermark } = useWatermark();
 const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
@@ -101,31 +105,9 @@ const menus = computed(() => [
     text: $t('page.auth.profile'),
   },
   {
-    handler: () => {
-      openWindow(VBEN_DOC_URL, {
-        target: '_blank',
-      });
-    },
+    handler: () => {},
     icon: BookOpenText,
     text: $t('ui.widgets.document'),
-  },
-  {
-    handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
-      });
-    },
-    icon: SvgGithubIcon,
-    text: 'GitHub',
-  },
-  {
-    handler: () => {
-      openWindow(`${VBEN_GITHUB_URL}/issues`, {
-        target: '_blank',
-      });
-    },
-    icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
   },
 ]);
 
@@ -206,10 +188,12 @@ watch(
   },
 );
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   if (preferences.app.watermark) {
     destroyWatermark();
   }
+  // 初始化租户
+  await tenantStore.initTenant();
 });
 </script>
 
@@ -250,8 +234,15 @@ onBeforeMount(() => {
         <LoginForm />
       </AuthenticationLoginExpiredModal>
     </template>
-    <!-- <template #header-right-150>
-      <span>SS</span>
-    </template> -->
+    <template #header-right-101>
+      <Select
+        v-if="tenantStore.tenantList.length > 0"
+        v-model="tenantStore.currentTenantId"
+        :options="tenantStore.tenantList"
+        class="w-40"
+        placeholder="请选择租户"
+        @update:model-value="() => refresh()"
+      />
+    </template>
   </BasicLayout>
 </template>

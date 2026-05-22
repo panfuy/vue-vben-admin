@@ -94,6 +94,14 @@ async function isTenantNameExists(
 }
 
 /**
+ * 获取当前租户列表（当前用户拥有的所有租户）
+ * @returns 租户列表
+ */
+async function getTenantList(): Promise<Array<TenantService.TenantVO>> {
+  return requestClient.get<Array<TenantService.TenantVO>>('/tenant/getList');
+}
+
+/**
  * 获取租户列表数据
  */
 async function getTenantListPage(
@@ -133,6 +141,7 @@ async function deleteTenant(id: string) {
 export {
   createTenant,
   deleteTenant,
+  getTenantList,
   getTenantListPage,
   getTenantRefIdsById,
   isTenantIdExists,
