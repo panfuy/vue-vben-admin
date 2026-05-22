@@ -23,6 +23,7 @@ package-lock.json
 .VSCodeCounter
 **/backend-mock/data
 .omx
+.pnpm-store
 # local env files
 .env.local
 .env.*.local
@@ -58,4 +59,4 @@ vite.config.ts.*
 .codex
 skills-lock.json
 .atomcode
-.datalog
+datalog
