@@ -27,9 +27,7 @@ const { globalEscapeShortcutKey } = usePreferences();
 /**
  * 默认配置
  */
-const DEFAULT_DRAWER_PROPS: Partial<DrawerProps> = {
-  closeOnPressEscape: globalEscapeShortcutKey.value, // Esc按钮为关闭事件
-};
+const DEFAULT_DRAWER_PROPS: Partial<DrawerProps> = {};
 
 export function setDefaultDrawerProps(props: Partial<DrawerProps>) {
   Object.assign(DEFAULT_DRAWER_PROPS, props);
@@ -41,6 +39,10 @@ export function useVbenDrawer<
   // Drawer一般会抽离出来，所以如果有传入 connectedComponent，则表示为外部调用，与内部组件进行连接
   // 外部的Drawer通过provide/inject传递api
 
+  const defaultOptions = {
+    closeOnPressEscape: globalEscapeShortcutKey.value, // 全局Esc快捷键配置
+    ...options,
+  };
   const { connectedComponent } = options;
   if (connectedComponent) {
     const extendedApi = reactive({});
@@ -53,7 +55,7 @@ export function useVbenDrawer<
             // 不能用 Object.assign,会丢失 api 的原型函数
             Object.setPrototypeOf(extendedApi, api);
           },
-          options,
+          defaultOptions,
           async reCreateDrawer() {
             isDrawerReady.value = false;
             await nextTick();
@@ -87,7 +89,7 @@ export function useVbenDrawer<
   const mergedOptions = {
     ...DEFAULT_DRAWER_PROPS,
     ...injectData.options,
-    ...options,
+    ...defaultOptions,
   } as DrawerApiOptions;
 
   mergedOptions.onOpenChange = (isOpen: boolean) => {

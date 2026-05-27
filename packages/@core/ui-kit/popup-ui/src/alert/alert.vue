@@ -49,9 +49,13 @@ function onAlertClosed() {
   isConfirm.value = false;
 }
 
-function onEscapeKeyDown() {
-  if (props.escapeKeyClose || globalEscapeShortcutKey.value) {
-    isConfirm.value = false;
+function onEscapeKeyDown(e: KeyboardEvent) {
+  // 先标记是按 Esc 触发的（用于后续 isConfirm 判断等）
+  isConfirm.value = false;
+
+  // 只有当组件参数和全局配置都为false时才阻止关闭，其任意一个为true都需要让esc生效
+  if (!props.escapeKeyClose && !globalEscapeShortcutKey.value) {
+    e.preventDefault();
   }
 }
 
@@ -148,7 +152,7 @@ async function handleOpenChange(val: boolean) {
       :overlay-blur="overlayBlur"
       @opened="emits('opened')"
       @closed="onAlertClosed"
-      @escape-key-down="onEscapeKeyDown"
+      @escape-key-down="onEscapeKeyDown($event)"
       :class="
         cn(
           containerClass,
